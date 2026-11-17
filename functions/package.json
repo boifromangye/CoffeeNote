@@ -1,0 +1,27 @@
+{
+  "name": "coffeenote-functions",
+  "private": true,
+  "description": "커피콩책 Cloud Functions (2nd gen, asia-northeast3) 및 Firestore 규칙 테스트",
+  "main": "lib/index.js",
+  "engines": {
+    "node": "22"
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit -p tsconfig.test.json",
+    "test": "vitest run",
+    "test:emu": "firebase emulators:exec --config ../firebase.json --project demo-coffeenote --only auth,firestore,functions \"npm test\""
+  },
+  "dependencies": {
+    "firebase-admin": "^14.5.1",
+    "firebase-functions": "^7.4.0"
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "^6.0.0",
+    "@types/node": "^22.20.5",
+    "firebase": "^13.4.0",
+    "firebase-tools": "^15.36.0",
+    "typescript": "^7.0.2",
+    "vitest": "^5.1.0"
+  }
+}
