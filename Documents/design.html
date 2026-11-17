@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>커피콩책(가제) · Design v1.1</title>
+<style>
+:root{
+--bg:#FAF7F2;--surface:#FFFFFF;--surface2:#F3EEE8;--text:#2B211B;--text2:#7A6A5F;--text3:#A89A8E;--line:#E6DDD3;
+--accent:#8A4B2A;--accent-soft:#F3E6DC;--on-accent:#FFFFFF;--danger:#B3261E;
+--ok:#3B6D11;--ok-soft:#EAF3DE;--warn:#854F0B;--warn-soft:#FAEEDA;
+--g-fruit-bg:#FBE4DC;--g-fruit:#A3401F;--g-floral-bg:#F8E1EC;--g-floral:#9A3563;--g-sweet-bg:#FAEBD2;--g-sweet:#8A5A0B;
+--g-nutty-bg:#EFE3D8;--g-nutty:#6B4226;--g-spice-bg:#E3EFD9;--g-spice:#3E6B1F;--g-roast-bg:#ECE8DA;--g-roast:#5E5A32;
+--g-ferm-bg:#ECE4F6;--g-ferm:#5B3A8C;--g-defect-bg:#ECECEA;--g-defect:#5F5E5A;
+--pent-fill:rgba(138,75,42,.22);--pent-grid:#E6DDD3;
+}
+html[data-theme="dark"]{
+--bg:#171310;--surface:#211B17;--surface2:#2A231E;--text:#F2EAE2;--text2:#A99A8E;--text3:#7D6F64;--line:#3A312A;
+--accent:#E0A07A;--accent-soft:#3A2A20;--on-accent:#2B211B;--danger:#F2B8B5;
+--ok:#97C459;--ok-soft:#24301A;--warn:#EF9F27;--warn-soft:#3A2C12;
+--g-fruit-bg:#4A2418;--g-fruit:#F5B8A3;--g-floral-bg:#45202F;--g-floral:#F2B3CD;--g-sweet-bg:#3F2F12;--g-sweet:#F2C878;
+--g-nutty-bg:#3A2A1E;--g-nutty:#DDBFA5;--g-spice-bg:#22331A;--g-spice:#B5D99A;--g-roast-bg:#33311F;--g-roast:#D6D0A6;
+--g-ferm-bg:#2E2340;--g-ferm:#CDB8EE;--g-defect-bg:#2E2E2C;--g-defect:#C2C0B8;
+--pent-fill:rgba(224,160,122,.25);--pent-grid:#3A312A;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard","Noto Sans KR",sans-serif;line-height:1.65;font-size:15px}
+.wrap{max-width:1080px;margin:0 auto;padding:32px 20px 80px}
+header{border-bottom:1px solid var(--line);padding-bottom:20px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+h1{font-size:28px;margin:0 0 4px}
+h2{font-size:21px;margin:48px 0 12px;padding-top:12px;border-top:1px solid var(--line)}
+h3{font-size:16px;margin:24px 0 8px}
+.meta{color:var(--text2);font-size:13px;margin:0}
+.toggle{border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:999px;padding:6px 14px;font-size:13px;cursor:pointer}
+table{width:100%;border-collapse:collapse;font-size:14px;background:var(--surface);border-radius:8px;overflow:hidden;margin:8px 0 16px}
+th,td{border-bottom:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:middle}
+th{background:var(--accent-soft);font-size:13px}
+code{font-family:"SF Mono",ui-monospace,Menlo,monospace;font-size:12.5px;background:var(--surface2);padding:1px 5px;border-radius:4px}
+.sw{display:inline-block;width:22px;height:22px;border-radius:6px;border:1px solid var(--line);vertical-align:middle;margin-right:6px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px}
+.card h3{margin-top:0}
+.desc{color:var(--text2);font-size:13px;margin:6px 0 0}
+.chip{display:inline-flex;align-items:center;gap:4px;font-size:12px;padding:3px 9px;border-radius:999px;white-space:nowrap;line-height:1.4}
+.g-fruit{background:var(--g-fruit-bg);color:var(--g-fruit)}.g-floral{background:var(--g-floral-bg);color:var(--g-floral)}
+.g-sweet{background:var(--g-sweet-bg);color:var(--g-sweet)}.g-nutty{background:var(--g-nutty-bg);color:var(--g-nutty)}
+.g-spice{background:var(--g-spice-bg);color:var(--g-spice)}.g-roast{background:var(--g-roast-bg);color:var(--g-roast)}
+.g-ferm{background:var(--g-ferm-bg);color:var(--g-ferm)}.g-defect{background:var(--g-defect-bg);color:var(--g-defect)}
+.dplus{display:inline-block;font-size:11px;font-weight:600;padding:1px 7px;border-radius:6px;background:var(--accent-soft);color:var(--accent);font-variant-numeric:tabular-nums}
+.score{font-variant-numeric:tabular-nums;font-weight:700;letter-spacing:-.3px}
+.rebuy{display:inline-flex;gap:4px}
+.rebuy span{width:26px;height:26px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:12px;border:1px solid var(--line);color:var(--text3)}
+.rebuy span.on-o{background:var(--ok-soft);color:var(--ok);border-color:transparent;font-weight:700}
+.rebuy span.on-m{background:var(--warn-soft);color:var(--warn);border-color:transparent;font-weight:700}
+.rebuy span.on-x{background:var(--g-defect-bg);color:var(--g-defect);border-color:transparent;font-weight:700}
+.seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg span{flex:1;text-align:center;font-size:12px;padding:4px 0;color:var(--text2);border-left:1px solid var(--line)}
+.seg span:first-child{border-left:none}
+.seg span.on{background:var(--accent);color:var(--on-accent);font-weight:600}
+.banner{background:var(--accent-soft);color:var(--accent);font-size:12px;padding:7px 10px;border-radius:8px;display:flex;justify-content:space-between;gap:8px}
+.banner b{font-weight:600;text-decoration:underline}
+/* phones */
+.phones{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:28px 20px;margin-top:16px}
+.ph-wrap .cap{font-size:13px;margin:0 0 8px;display:flex;gap:8px;align-items:center}
+.ph-wrap .cap b{display:inline-flex;width:24px;height:24px;border-radius:7px;background:var(--accent);color:var(--on-accent);align-items:center;justify-content:center;font-size:12px}
+.phone{width:300px;height:620px;border:8px solid #1d1a18;border-radius:42px;background:var(--bg);overflow:hidden;position:relative;font-size:13px;line-height:1.45;display:flex;flex-direction:column}
+html[data-theme="dark"] .phone{border-color:#000}
+.sb{height:34px;flex:none;display:flex;justify-content:space-between;align-items:center;padding:6px 22px 0;font-size:12px;font-weight:600}
+.scr{flex:1;overflow:hidden;padding:0 14px;position:relative}
+.nb{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--accent);height:30px}
+.nb .t{color:var(--text);font-weight:600;font-size:14px}
+.lt{font-size:24px;font-weight:700;margin:2px 0 8px}
+.search{background:var(--surface2);border-radius:9px;padding:6px 10px;color:var(--text3);font-size:12px;margin-bottom:8px}
+.row{background:var(--surface);border-radius:12px;padding:10px;display:flex;gap:10px;align-items:center;margin-bottom:8px;border:1px solid var(--line)}
+.row .mid{flex:1;min-width:0}
+.row .nm{font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .sub{color:var(--text2);font-size:11px;margin:1px 0 4px}
+.row .tags{display:flex;gap:4px;flex-wrap:nowrap;overflow:hidden}
+.row .tags .chip{font-size:10px;padding:1px 6px}
+.row .sc{font-size:15px}
+.fab{position:absolute;right:14px;bottom:14px;width:48px;height:48px;border-radius:50%;background:var(--accent);color:var(--on-accent);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:300}
+.tab{height:58px;flex:none;border-top:1px solid var(--line);display:flex;justify-content:space-around;align-items:flex-start;padding-top:8px;background:var(--surface);font-size:10px;color:var(--text3)}
+.tab div{display:flex;flex-direction:column;align-items:center;gap:2px}
+.sf{display:inline-block;width:1.15em;height:1.15em;vertical-align:-0.2em;flex:none}
+.sf svg{width:100%;height:100%;display:block}
+.sf.sm{width:.95em;height:.95em}
+.tab .sf{width:24px;height:24px}
+.sbi{display:inline-flex;gap:4px;align-items:center}
+.sbi .sf{width:15px;height:15px}
+.back{display:inline-flex;align-items:center;gap:1px}
+.tbi .sf{width:20px;height:20px}
+.tbi{display:inline-flex;width:28px;height:28px;align-items:center;justify-content:center;border-radius:50%;color:var(--accent);font-size:15px}
+.tab .on{color:var(--accent)}
+.sec{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:8px}
+.sec .h{font-size:11px;color:var(--text2);font-weight:600;margin-bottom:6px;display:flex;justify-content:space-between}
+.kv{display:flex;justify-content:space-between;font-size:12px;padding:3px 0;border-bottom:1px solid var(--line)}
+.kv:last-child{border-bottom:none}
+.kv span:first-child{color:var(--text2)}
+.mini{width:100%;border-collapse:collapse;font-size:10.5px;background:none;margin:0}
+.mini th,.mini td{padding:4px 3px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+.mini th{background:none;color:var(--text2);font-weight:600;font-size:10px}
+.sheet{position:absolute;left:0;right:0;bottom:0;top:120px;background:var(--surface);border-radius:16px 16px 0 0;padding:8px 14px;border-top:1px solid var(--line)}
+.grab{width:36px;height:5px;border-radius:3px;background:var(--line);margin:0 auto 8px}
+.dim{position:absolute;inset:0;background:rgba(0,0,0,.28)}
+.tile{border-radius:10px;padding:10px;font-size:12px;font-weight:600;min-height:58px;display:flex;flex-direction:column;justify-content:space-between}
+.tile small{font-weight:400;font-size:10px;opacity:.85}
+.check{width:16px;height:16px;border-radius:50%;border:1.5px solid var(--line);flex:none}
+.check.on{background:var(--accent);border-color:var(--accent)}
+.li{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);font-size:12px}
+.li .ch{margin-left:auto;color:var(--text3)}
+.btn{background:var(--accent);color:var(--on-accent);border-radius:12px;text-align:center;padding:11px;font-weight:600;font-size:13px}
+.btn.ghost{background:var(--surface2);color:var(--text)}
+.field{display:flex;justify-content:space-between;font-size:12px;padding:6px 0;border-bottom:1px solid var(--line)}
+.field span:first-child{color:var(--text2)}
+.field .ph{color:var(--text3)}
+.err{color:var(--danger);font-size:10.5px;margin-top:2px}
+.apple{background:#000;color:#fff;border-radius:10px;text-align:center;padding:11px;font-weight:600;font-size:13px}
+html[data-theme="dark"] .apple{background:#fff;color:#000}
+ul.notes{margin:6px 0;padding-left:18px;font-size:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+<div>
+<p class="meta">Spec-Driven Development · 짝 문서: <a href="specification.html">specification.html</a></p>
+<h1>커피콩책(가제) — Design</h1>
+<p class="meta">버전 1.1 · 2026-11-17 · 상태: 확정 · 화면 ID는 specification의 A–L과 같음 · v1.1: 외부 리뷰 반영(시트 스와이프 감지, Liquid Glass 대응, 동기화 표시, 내 점수, 대비 수치 정정, 설정 목업 복구)</p>
+</div>
+<button class="toggle" id="themeBtn" type="button">다크 모드로 보기</button>
+</header>
+
+<h2>1. HIG 검토 결과 (v0.2 · v1.1 보완)</h2>
+<p class="meta">v0.1 설계를 Apple Human Interface Guidelines 기준으로 점검하고 고친 내용(1~17), v1.1 외부 리뷰에서 추가로 고친 내용(18~21). 새 화면을 추가할 때도 이 표의 항목으로 다시 점검한다.</p>
+<table>
+<tr><th style="width:34px">#</th><th style="width:150px">항목</th><th>이전</th><th>수정</th><th style="width:150px">HIG 근거</th></tr>
+<tr><td>1</td><td>로그인 시점</td><td>첫 화면에서 Apple 로그인 강제</td><td>익명 계정으로 바로 시작, 첫 노트 저장 후 계정 연결 안내 카드. 연결 혜택을 문구로 설명</td><td>Sign in with Apple · Managing accounts</td></tr>
+<tr><td>2</td><td>Sign in with Apple 버튼</td><td>직접 그린 검은 버튼</td><td>시스템 <code>SignInWithAppleButton(.continue)</code>, 다크 모드에서 흰 스타일, 다른 버튼보다 작지 않게</td><td>Sign in with Apple › Buttons</td></tr>
+<tr><td>3</td><td>새 노트 버튼</td><td>오른쪽 아래 플로팅 버튼(FAB)</td><td>내비게이션 바 툴바 버튼(<code>square.and.pencil</code>). FAB는 iOS 표준 패턴이 아님</td><td>Toolbars</td></tr>
+<tr><td>4</td><td>정렬·태그 필터</td><td>커스텀 칩 + 별도 메뉴</td><td>툴바 <code>Menu</code> 하나로 묶고, 적용된 태그는 검색 필드의 토큰으로 표시</td><td>Menus · Searching</td></tr>
+<tr><td>5</td><td>시트 겹침</td><td>노트 작성 시트 위에 원두 선택·태그 시트를 다시 띄움</td><td>시트는 하나만. 원두 선택(E)·원두 등록(F)·태그(G)는 시트 안에서 push</td><td>Sheets · Modality</td></tr>
+<tr><td>6</td><td>작성 중 닫기</td><td>취소 시 확인 알림만</td><td>변경 사항이 있으면 쓸어내려 닫기를 막고, 취소·스와이프 모두 액션 시트("변경 사항 버리기")로 확인</td><td>Sheets</td></tr>
+<tr><td>7</td><td>삭제 확인</td><td>alert</td><td>사용자가 고른 파괴적 동작은 <code>.confirmationDialog</code>(액션 시트), 파괴적 버튼은 빨간색</td><td>Action sheets · Alerts</td></tr>
+<tr><td>8</td><td>토스트</td><td>태그 10개 초과 시 토스트</td><td>iOS에 토스트 컴포넌트가 없음. 목록 상단 인라인 문구 + 선택 안 된 행 비활성화 + 경고 햅틱</td><td>Feedback</td></tr>
+<tr><td>9</td><td>로스팅 정도 입력</td><td>세그먼트 5개(긴 라벨이 줄바꿈)</td><td><code>Picker</code> 메뉴. iPhone 세그먼트는 5개 이하이면서 라벨이 짧아야 함</td><td>Segmented controls</td></tr>
+<tr><td>10</td><td>태그 행 탭 영역</td><td>한 행에 "선택"과 "›"를 따로 탭</td><td>하위가 있는 행은 전체가 push, 그 단계 선택은 목록 맨 위 "‘과일’ 전체" 행. 한 행에 탭 영역은 하나</td><td>Lists and tables</td></tr>
+<tr><td>11</td><td>터치 영역</td><td>재구매 원(26pt), 칩 삭제 버튼, 축 세그먼트가 작음</td><td>모든 상호작용 요소 44×44pt 이상. 재구매는 시스템 세그먼트 컨트롤로 변경</td><td>Accessibility › Buttons and controls</td></tr>
+<tr><td>12</td><td>텍스트 대비</td><td><code>textTertiary</code>(배경 대비 2.56:1)를 본문에 사용</td><td><code>textTertiary</code>는 플레이스홀더 전용, 내용 텍스트는 <code>textSecondary</code>(라이트 4.85:1 / 다크 6.77:1). 고대비 설정용 색 변형 추가. 구현에서는 <code>textTertiary</code>를 <code>TextField</code> prompt 외에 쓰지 못하도록 토큰을 <code>Color.cn.placeholder</code>로만 노출 (v1.1 수치 정정)</td><td>Color · Accessibility</td></tr>
+<tr><td>13</td><td>탭 바 아이콘</td><td>빈 사각형</td><td>SF Symbols: 노트 <code>book.closed</code>, 원두 <code>cup.and.saucer</code>, 설정 <code>gearshape</code>(선택 시 fill 변형은 시스템이 처리)</td><td>Tab bars · SF Symbols</td></tr>
+<tr><td>14</td><td>빈 상태</td><td>커스텀 레이아웃</td><td><code>ContentUnavailableView</code>(iOS 17) 사용</td><td>Layout</td></tr>
+<tr><td>15</td><td>Dynamic Type</td><td>고정 레이아웃</td><td>접근성 크기에서 목록 행을 세로 배치로 바꾸고, 원두 상세의 기록 표는 카드로 전환</td><td>Typography</td></tr>
+<tr><td>16</td><td>차트 접근성</td><td>VoiceOver 라벨만</td><td>라벨 + <code>.accessibilityChartDescriptor</code>, Reduce Motion이면 애니메이션 끔</td><td>Charts · Accessibility</td></tr>
+<tr><td>17</td><td>보조 동작</td><td>스와이프 삭제만</td><td>목록 행에 <code>.contextMenu</code>(편집, 이 레시피로 새 노트, 삭제) 추가</td><td>Context menus</td></tr>
+<tr><td>18</td><td>시트 스와이프 닫기 (v1.1)</td><td><code>.interactiveDismissDisabled</code>만으로 "스와이프 시 확인"을 가정 — SwiftUI는 스와이프 시도를 알려 주지 않음</td><td>UIKit <code>presentationControllerDidAttemptToDismiss</code>로 시도를 감지해 확인 메뉴 표시. 래퍼 <code>DiscardGuardedSheet</code>로 D·F·L 시트에 공통 적용</td><td>Sheets</td></tr>
+<tr><td>19</td><td>최신 iOS 외관 (v1.1)</td><td>바·시트 외관에 대한 기준 없음</td><td>iOS 26 SDK 빌드. 탭 바·툴바·시트 배경을 직접 칠하지 않고(<code>.toolbarBackground</code> 지정 안 함) 시스템 외관(Liquid Glass) 사용. 크림 배경은 스크롤 콘텐츠 영역에만 <code>.scrollContentBackground(.hidden)</code> + 배경색으로 적용</td><td>Materials · Toolbars</td></tr>
+<tr><td>20</td><td>저장 피드백 (v1.1)</td><td>오프라인 저장도 "성공"으로만 표현</td><td>"기기에 저장됨"과 "동기화됨"을 구분. 대기 중이면 목록 배너와 구름 아이콘(<code>icloud.and.arrow.up</code>)</td><td>Feedback</td></tr>
+<tr><td>21</td><td>접근성 검증 범위 (v1.1)</td><td>규칙만 있고 검증 항목 없음</td><td>test-plan.md의 HIG 항목(가장 큰 접근성 글자, 긴 원두·로스터리 이름, 태그 10개, VoiceOver로 Form 입력, iPhone SE 크기)으로 실기기 확인. 특히 G는 칩 영역을 접근성 크기에서 세로 스크롤 목록으로 전환</td><td>Accessibility</td></tr>
+</table>
+<p class="meta">유지한 커스텀 요소: 오각형 차트, 플레이버 태그 칩, 축 입력 세그먼트, 크림 배경과 로스팅 브라운 강조색. 모두 위 기준(터치 영역, 대비, Dynamic Type, VoiceOver)을 지키는 조건으로 사용한다.</p>
+
+<h2>2. 디자인 원칙</h2>
+<ul class="notes">
+<li><b>종이 노트처럼 한눈에</b> — 상세 화면(C)은 한 장의 테이스팅 노트처럼 위에서 아래로 읽히게 한다.</li>
+<li><b>오각형이 얼굴</b> — 목록·카드·상세 어디서든 같은 오각형 컴포넌트를 크기만 바꿔 쓴다. 원두의 맛을 기억하는 시각적 단서다.</li>
+<li><b>숫자는 표로</b> — 같은 원두의 여러 잔 비교(I)는 꺾은선 그래프 대신 표로 보여준다.</li>
+<li><b>시스템 컴포넌트 우선</b> — Form, List, Menu, Picker, 검색, 확인 대화상자는 시스템 것을 쓰고, 직접 만드는 건 오각형·태그 칩·축 입력으로 한정한다.</li>
+<li><b>필수는 최소로</b> — 원두와 마신 날만 필수. 나머지 섹션은 "추가" 버튼으로 켜는 방식이라 빈 폼이 부담스럽지 않다.</li>
+<li><b>로스팅 브라운 한 가지 강조색</b> — 강조색은 하나만 쓰고, 색은 플레이버 계열을 구분할 때만 쓴다.</li>
+</ul>
+
+<h2>3. 색상 토큰</h2>
+<p class="meta">SwiftUI에서는 Asset Catalog의 Color Set(Any / Dark)으로 등록하고 <code>Color.cn.background</code> 형태로 접근한다.</p>
+<table>
+<tr><th>토큰</th><th>Light</th><th>Dark</th><th>용도</th></tr>
+<tr><td><code>background</code></td><td><span class="sw" style="background:#FAF7F2"></span>#FAF7F2</td><td><span class="sw" style="background:#171310"></span>#171310</td><td>화면 배경(크림)</td></tr>
+<tr><td><code>surface</code></td><td><span class="sw" style="background:#FFFFFF"></span>#FFFFFF</td><td><span class="sw" style="background:#211B17"></span>#211B17</td><td>카드, 시트</td></tr>
+<tr><td><code>surfaceSecondary</code></td><td><span class="sw" style="background:#F3EEE8"></span>#F3EEE8</td><td><span class="sw" style="background:#2A231E"></span>#2A231E</td><td>검색 바, 보조 버튼</td></tr>
+<tr><td><code>textPrimary</code></td><td><span class="sw" style="background:#2B211B"></span>#2B211B</td><td><span class="sw" style="background:#F2EAE2"></span>#F2EAE2</td><td>본문(에스프레소)</td></tr>
+<tr><td><code>textSecondary</code></td><td><span class="sw" style="background:#7A6A5F"></span>#7A6A5F</td><td><span class="sw" style="background:#A99A8E"></span>#A99A8E</td><td>보조 텍스트, 라벨</td></tr>
+<tr><td><code>textTertiary</code></td><td><span class="sw" style="background:#A89A8E"></span>#A89A8E</td><td><span class="sw" style="background:#7D6F64"></span>#7D6F64</td><td>플레이스홀더 전용 (내용 텍스트에 쓰지 않음, 대비 라이트 2.56:1 / 다크 3.81:1)</td></tr>
+<tr><td colspan="4" style="font-size:13px;color:var(--text2)">모든 텍스트 색은 Asset Catalog에서 <b>High Contrast</b> 변형을 함께 등록한다 (설정 › 손쉬운 사용 › 대비 증가).</td></tr>
+<tr><td><code>separator</code></td><td><span class="sw" style="background:#E6DDD3"></span>#E6DDD3</td><td><span class="sw" style="background:#3A312A"></span>#3A312A</td><td>구분선, 오각형 격자</td></tr>
+<tr><td><code>accent</code></td><td><span class="sw" style="background:#8A4B2A"></span>#8A4B2A</td><td><span class="sw" style="background:#E0A07A"></span>#E0A07A</td><td>버튼, 선택, 오각형 선 (Tint)</td></tr>
+<tr><td><code>accentSoft</code></td><td><span class="sw" style="background:#F3E6DC"></span>#F3E6DC</td><td><span class="sw" style="background:#3A2A20"></span>#3A2A20</td><td>D+N 배지, 배너 배경</td></tr>
+<tr><td><code>rebuyYes / Maybe</code></td><td><span class="sw" style="background:#3B6D11"></span><span class="sw" style="background:#854F0B"></span></td><td><span class="sw" style="background:#97C459"></span><span class="sw" style="background:#EF9F27"></span></td><td>재구매 O / △ (X는 결점 회색)</td></tr>
+<tr><td><code>danger</code></td><td><span class="sw" style="background:#B3261E"></span>#B3261E</td><td><span class="sw" style="background:#F2B8B5"></span>#F2B8B5</td><td>검증 오류, 삭제</td></tr>
+</table>
+
+<h3>플레이버 계열 색상</h3>
+<p class="meta">계열마다 배경/글자 한 쌍. 태그 칩, G의 계열 타일에 쓴다. 칩에는 항상 텍스트가 있어 색만으로 구분하지 않는다.</p>
+<p style="display:flex;gap:6px;flex-wrap:wrap;margin:10px 0">
+<span class="chip g-fruit">과일</span><span class="chip g-floral">꽃</span><span class="chip g-sweet">단맛</span><span class="chip g-nutty">견과·초콜릿</span><span class="chip g-spice">향신료·허브</span><span class="chip g-roast">차·곡물·로스트</span><span class="chip g-ferm">발효·주류</span><span class="chip g-defect">결점</span>
+</p>
+
+<h2>4. 타이포그래피</h2>
+<p class="meta">시스템 폰트(SF Pro / Apple SD Gothic Neo), iOS Text Style을 그대로 써서 Dynamic Type을 지원한다. 숫자(점수, 레시피, D+N)는 <code>.monospacedDigit()</code>.</p>
+<table>
+<tr><th>스타일</th><th>SwiftUI</th><th>크기/굵기 (기본)</th><th>쓰는 곳</th></tr>
+<tr><td style="font-size:26px;font-weight:700">노트</td><td><code>.largeTitle.bold()</code></td><td>34 / Bold</td><td>탭 홈 타이틀</td></tr>
+<tr><td style="font-size:20px;font-weight:700">86.25</td><td><code>.system(size: 34, weight: .bold, design: .rounded)</code></td><td>34 / Bold Rounded</td><td>C 상세 점수</td></tr>
+<tr><td style="font-size:18px;font-weight:600">에티오피아 예가체프</td><td><code>.title3.weight(.semibold)</code></td><td>20 / Semibold</td><td>상세 헤더 원두 이름</td></tr>
+<tr><td style="font-weight:600">섹션 제목</td><td><code>.headline</code></td><td>17 / Semibold</td><td>목록 행 원두 이름</td></tr>
+<tr><td>본문</td><td><code>.body</code></td><td>17 / Regular</td><td>후기, 폼 입력</td></tr>
+<tr><td style="font-size:13px;color:var(--text2)">로스터리 · 11월 16일</td><td><code>.subheadline</code></td><td>15 / Regular</td><td>보조 정보</td></tr>
+<tr><td style="font-size:12px;color:var(--text2)">추출 레시피</td><td><code>.footnote.weight(.semibold)</code></td><td>13 / Semibold</td><td>섹션 라벨</td></tr>
+<tr><td style="font-size:11px">D+14</td><td><code>.caption2.weight(.semibold)</code></td><td>11 / Semibold</td><td>배지, 칩</td></tr>
+</table>
+
+<h2>5. 간격과 모양</h2>
+<table>
+<tr><th>토큰</th><th>값</th><th>용도</th></tr>
+<tr><td><code>space.xs / s / m / l / xl</code></td><td>4 / 8 / 12 / 16 / 24</td><td>요소 간격. 화면 좌우 여백 16, 섹션 간 12</td></tr>
+<tr><td><code>radius.card</code></td><td>16 (continuous)</td><td>카드, 섹션</td></tr>
+<tr><td><code>radius.control</code></td><td>10</td><td>버튼, 세그먼트, 검색 바</td></tr>
+<tr><td><code>radius.chip</code></td><td>Capsule</td><td>태그 칩</td></tr>
+<tr><td>테두리</td><td>0.5pt <code>separator</code></td><td>카드 외곽. 그림자는 쓰지 않음</td></tr>
+</table>
+
+<h2>6. 컴포넌트</h2>
+<div class="grid2">
+
+<div class="card">
+<h3>PentagonChart</h3>
+<div style="display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap">
+<div style="text-align:center"><svg class="pent" data-v="4,5,4,3,2" data-s="44"></svg><p class="desc">S 44</p></div>
+<div style="text-align:center"><svg class="pent" data-v="4,5,4,3,2" data-s="88"></svg><p class="desc">M 88</p></div>
+<div style="text-align:center"><svg class="pent" data-v="4,5,4,3,2" data-s="170" data-l="1"></svg><p class="desc">L 160+, 라벨</p></div>
+<div style="text-align:center"><svg class="pent" data-v="" data-s="44"></svg><p class="desc">값 없음</p></div>
+</div>
+<p class="desc">꼭짓점 순서: 아로마(12시) → 산미 → 단맛 → 후미 → 바디, 시계 방향. 격자 5단계는 L에서만, S·M은 바깥 테두리만. 채움 <code>accent</code> 22%, 선 1.5pt. <code>Shape</code>로 구현하고 값 변경 시 <code>.animation(.snappy)</code>로 꼭짓점이 이동. 값이 없으면 점선 테두리.</p>
+</div>
+
+<div class="card">
+<h3>축 입력 (D)</h3>
+<div id="axisDemo"></div>
+<p class="desc">각 행은 라벨 + 1~5 세그먼트, 세그먼트 하나의 터치 영역 44×44pt 이상(행 높이 44pt). 탭할 때 가벼운 햅틱(<code>.sensoryFeedback(.selection)</code>). 위의 오각형이 바로 갱신된다. 시연: 세그먼트를 눌러 보세요.</p>
+<div style="text-align:center;margin-top:8px"><svg class="pent" id="axisPent" data-v="3,3,3,3,3" data-s="150" data-l="1"></svg></div>
+</div>
+
+<div class="card">
+<h3>배지와 표시</h3>
+<p style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+<span class="dplus">D+14</span>
+<span class="score" style="font-size:17px">86.25</span>
+<span class="score" style="font-size:30px">88.00</span>
+<span class="seg" style="width:180px;display:inline-flex"><span>없음</span><span class="on">O</span><span>△</span><span>X</span></span>
+</p>
+<p class="desc"><b>DPlusBadge</b>: <code>accentSoft</code> 배경, 로스팅일 없으면 렌더링하지 않음. <b>ScoreText</b>: 항상 소수 둘째 자리, rounded + monospaced digit. 점수 없으면 목록에서 "–". <b>재구매</b>: 시스템 <code>Picker(.segmented)</code> 4칸(없음/O/△/X), VoiceOver 라벨은 "다시 살래요 / 고민돼요 / 안 살래요". 상세 화면에서는 읽기 전용 배지.</p>
+</div>
+
+<div class="card">
+<h3>FlavorTagChip</h3>
+<p style="display:flex;gap:6px;flex-wrap:wrap">
+<span class="chip g-fruit">복숭아</span><span class="chip g-fruit">베리</span><span class="chip g-floral">자스민</span><span class="chip g-roast">홍차</span><span class="chip g-sweet">꿀</span><span class="chip g-fruit">블루베리 <i class="sf sm" data-s="xmark" aria-hidden="true"></i></span>
+</p>
+<p class="desc">프레그런스와 컵 노트 태그 모두 같은 칩을 쓰고, 상세 화면에서는 "프레그런스" / "컵 노트" 라벨로 줄을 나눈다. 태그의 최상위 계열 색. 상위 태그를 고른 경우(예: "베리")도 같은 모양. 편집 중에는 칩 전체를 탭해서 제거(보이는 높이 28pt, 터치 영역 44pt로 확장). 목록 행에서는 최대 3개 + "+N".</p>
+</div>
+
+<div class="card">
+<h3>레시피 요약과 불러오기 배너</h3>
+<div class="banner"><span>11월 10일 레시피를 불러왔어요</span><b>비우기</b></div>
+<div style="margin-top:10px;font-size:13px;font-variant-numeric:tabular-nums">
+<div class="kv"><span>추출 방식</span><span>핸드드립 · 핫</span></div>
+<div class="kv"><span>드리퍼</span><span>하리오 V60 02 세라믹</span></div>
+<div class="kv"><span>그라인더 · 분쇄도</span><span>코만단테 C40 · 22클릭</span></div>
+<div class="kv"><span>원두 / 물</span><span>15.0g / 240g · 1:16.0</span></div>
+<div class="kv"><span>온도</span><span>93℃</span></div>
+<div class="kv"><span>추출 시간</span><span>2:40</span></div>
+</div>
+<p class="desc">비율은 계산 값이라 읽기 전용. 분쇄도 단위("클릭")는 그라인더 설정에서 가져와 붙인다.</p>
+<h3 style="margin-top:16px">원산지 요약 표시</h3><p style="font-size:13px;margin:0">에티오피아 · 워시드<br>블렌드 · 에티오피아 60% / 브라질 40%</p><p class="desc">구성 1개는 싱글 오리진, 2개 이상이면 "블렌드" 접두어. 목록에서는 구성 2개까지 + "+N".</p>
+</div>
+
+<div class="card">
+<h3>내 점수 입력 (D)</h3>
+<div style="display:flex;gap:10px;align-items:center">
+<div style="background:var(--surface2);border-radius:10px;padding:4px 14px;text-align:center;font-variant-numeric:tabular-nums;line-height:1.5">
+<div style="color:var(--text3);font-size:12px">85</div><div style="font-size:20px;font-weight:700">86</div><div style="color:var(--text3);font-size:12px">87</div>
+</div>
+<div class="seg" style="flex:1"><span>.00</span><span class="on">.25</span><span>.50</span><span>.75</span></div>
+</div>
+<p class="desc">정수는 시스템 <code>Picker(.wheel)</code> 0~100, 소수는 시스템 <code>Picker(.segmented)</code>. 처음 켜면 80.00. 섹션 오른쪽 "지우기"로 nil.</p>
+</div>
+
+</div>
+
+<h2>7. 화면 목업 A–L</h2>
+<p class="meta">아이콘은 모두 SF Symbols이며, 목업에서는 같은 이름의 심볼을 단순화해 그렸다(실제 앱은 <code>Image(systemName:)</code>로 해당 심볼 사용). 탭 바는 선택된 탭에 채움 변형(<code>.fill</code>)이 자동 적용된다. iPhone 기준 비율(축소). 실제 크기·간격은 5장의 토큰을 따른다. 목업 속 글자는 축소된 것이며 실제 최소 크기는 11pt(<code>.caption2</code>).</p>
+<div class="phones">
+
+<!-- A -->
+<div class="ph-wrap"><p class="cap"><b>A</b>Apple로 계속하기 (시트, medium)</p>
+<div class="phone"><div class="sb"><span>9:41</span><span class="sbi"><i class="sf" data-s="cellularbars" aria-hidden="true"></i><i class="sf" data-s="wifi" aria-hidden="true"></i><i class="sf" data-s="battery.100" aria-hidden="true"></i></span></div>
+<div class="scr" style="padding:0">
+<div style="padding:0 14px;opacity:.45"><div class="lt" style="margin-top:32px">설정</div><div class="sec"><div class="h">계정</div><div class="field" style="border-bottom:none;color:var(--accent)">Apple로 계속하기</div></div></div>
+<div class="dim"></div>
+<div class="sheet" style="top:250px">
+<div class="grab"></div>
+<div class="nb"><span class="tbi" style="background:var(--surface2);color:var(--text2)"><i class="sf" data-s="xmark" aria-hidden="true"></i></span><span></span><span></span></div>
+<p style="font-size:17px;font-weight:700;margin:6px 0 8px">기록을 안전하게 보관하세요</p>
+<p style="margin:0 0 4px;font-size:12px"><i class="sf" data-s="checkmark" aria-hidden="true"></i> 기기를 바꿔도 노트가 그대로 남아요</p>
+<p style="margin:0 0 16px;font-size:12px"><i class="sf" data-s="checkmark" aria-hidden="true"></i> 예전에 보관한 기록도 불러올 수 있어요</p>
+<div class="apple">Apple로 계속하기</div>
+<p style="text-align:center;color:var(--text2);font-size:10px;margin:4px 0 0">시스템 SignInWithAppleButton(로고는 시스템이 그림)</p>
+<p style="text-align:center;color:var(--text2);font-size:11px;margin-top:10px">이메일 가리기를 선택해도 괜찮아요</p>
+</div></div></div></div>
+
+<!-- B -->
+<div class="ph-wrap"><p class="cap"><b>B</b>노트 목록</p>
+<div class="phone"><div class="sb"><span>9:41</span><span class="sbi"><i class="sf" data-s="cellularbars" aria-hidden="true"></i><i class="sf" data-s="wifi" aria-hidden="true"></i><i class="sf" data-s="battery.100" aria-hidden="true"></i></span></div>
+<div class="scr">
+<div class="nb"><span></span><span style="display:flex;gap:4px"><span class="tbi" title="정렬·필터 Menu"><i class="sf" data-s="line.3.horizontal.decrease.circle" aria-hidden="true"></i></span><span class="tbi" title="새 노트"><i class="sf" data-s="square.and.pencil" aria-hidden="true"></i></span></span></div>
+<div class="lt">노트</div>
+<div class="search" style="display:flex;gap:6px;align-items:center"><i class="sf" data-s="magnifyingglass" aria-hidden="true"></i> <span class="chip g-fruit" style="font-size:10.5px;padding:1px 7px">복숭아</span><span>검색</span></div>
+<p style="font-size:10.5px;color:var(--text2);margin:0 0 6px"><i class="sf" data-s="icloud.and.arrow.up" aria-hidden="true"></i> 동기화 대기 1개 · 연결되면 자동으로 올라가요</p>
+<div class="row" style="background:var(--accent-soft);border-color:transparent;align-items:flex-start"><div class="mid"><div class="nm" style="color:var(--accent)">기록을 안전하게 보관하세요</div><div class="sub" style="color:var(--text);white-space:normal">Apple 계정을 연결하면 기기를 바꿔도 노트가 남아요.</div><span class="chip" style="background:var(--accent);color:var(--on-accent)">Apple로 계속하기</span></div><span class="tbi" style="color:var(--text2)"><i class="sf" data-s="xmark" aria-hidden="true"></i></span></div>
+<div class="row"><svg class="pent" data-v="4,5,4,3,2" data-s="44"></svg><div class="mid"><div class="nm">에티오피아 예가체프 코체레</div><div class="sub">모래알 로스터스 · 11월 16일 <span class="dplus">D+14</span></div><div class="tags"><span class="chip g-fruit">복숭아</span><span class="chip g-roast">홍차</span><span class="chip g-sweet">꿀</span></div></div><div style="text-align:right"><div class="sc score">86.25</div><div style="font-size:11px;color:var(--text2)" aria-label="아직 동기화되지 않음"><i class="sf" data-s="icloud.and.arrow.up" aria-hidden="true"></i></div></div></div>
+<div class="row"><svg class="pent" data-v="4,4,3,4,3" data-s="44"></svg><div class="mid"><div class="nm">에티오피아 예가체프 코체레</div><div class="sub">모래알 로스터스 · 11월 10일 <span class="dplus">D+8</span></div><div class="tags"><span class="chip g-fruit">복숭아</span><span class="chip g-floral">자스민</span></div></div><div class="sc score">85.50</div></div>
+<div class="row"><svg class="pent" data-v="3,4,4,3,3" data-s="44"></svg><div class="mid"><div class="nm">케냐 키루가 AA</div><div class="sub">모래알 로스터스 · 10월 28일 <span class="dplus">D+9</span></div><div class="tags"><span class="chip g-fruit">복숭아</span><span class="chip g-fruit">블랙커런트</span></div></div><div class="sc score">87.00</div></div>
+<p style="font-size:10.5px;color:var(--text2);margin:2px 0 0">안내 카드는 첫 노트, 10번째 노트 저장 후 각 1회. <i class="sf" data-s="line.3.horizontal.decrease.circle" aria-hidden="true"></i> 메뉴: 최신순 <i class="sf" data-s="checkmark" aria-hidden="true"></i> · 점수순 · 태그로 거르기… / 검색 필드의 "복숭아" 토큰 = 적용된 태그 필터</p>
+</div>
+<div class="tab"><div class="on"><i class="sf" data-s="book.closed" aria-hidden="true"></i>노트</div><div><i class="sf" data-s="cup.and.saucer" aria-hidden="true"></i>원두</div><div><i class="sf" data-s="gearshape" aria-hidden="true"></i>설정</div></div>
+</div></div>
+
+<!-- C -->
+<div class="ph-wrap"><p class="cap"><b>C</b>노트 상세</p>
+<div class="phone"><div class="sb"><span>9:41</span><span class="sbi"><i class="sf" data-s="cellularbars" aria-hidden="true"></i><i class="sf" data-s="wifi" aria-hidden="true"></i><i class="sf" data-s="battery.100" aria-hidden="true"></i></span></div>
+<div class="scr">
+<div class="nb"><span class="back"><i class="sf" data-s="chevron.left" aria-hidden="true"></i>노트</span><span style="display:flex;gap:2px;align-items:center"><span>편집</span><span class="tbi"><i class="sf" data-s="ellipsis.circle" aria-hidden="true"></i></span></span></div>
+<p style="font-size:16px;font-weight:700;margin:4px 0 0">에티오피아 예가체프 코체레 <i class="sf" data-s="chevron.right" aria-hidden="true"></i></p>
+<p style="color:var(--text2);font-size:11px;margin:0 0 6px">모래알 로스터스 · 에티오피아 · 워시드 · 로스팅 11.02 → 마심 11.16 <span class="dplus">D+14</span></p>
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span><span style="font-size:10.5px;color:var(--text2);display:block">내 점수</span><span class="score" style="font-size:26px">86.25</span></span><span class="chip" style="background:var(--ok-soft);color:var(--ok);font-weight:600">재구매 O</span></div>
+<div class="sec" style="display:flex;gap:8px;align-items:center"><svg class="pent" data-v="4,5,4,3,2" data-s="128" data-l="1"></svg>
+<div style="flex:1;font-size:11px;font-variant-numeric:tabular-nums"><div class="kv"><span>아로마</span><span>4</span></div><div class="kv"><span>산미</span><span>5</span></div><div class="kv"><span>단맛</span><span>4</span></div><div class="kv"><span>후미</span><span>3</span></div><div class="kv"><span>바디</span><span>2</span></div></div></div>
+<div class="sec"><div class="h">향과 맛</div>
+<p style="margin:0 0 2px;font-size:10.5px;color:var(--text2)">프레그런스</p>
+<p style="display:flex;gap:4px;flex-wrap:wrap;margin:0 0 6px"><span class="chip g-floral">자스민</span><span class="chip g-fruit">레몬</span></p>
+<p style="margin:0 0 2px;font-size:10.5px;color:var(--text2)">컵 노트</p>
+<p style="display:flex;gap:4px;flex-wrap:wrap;margin:0 0 4px"><span class="chip g-fruit">복숭아</span><span class="chip g-roast">홍차</span><span class="chip g-sweet">꿀</span></p>
+<p style="margin:0;font-size:11px;color:var(--text2)">로스터리 노트 · 베르가못, 살구</p></div>
+<div class="sec"><div class="h">추출 레시피</div><div style="font-size:11px;font-variant-numeric:tabular-nums">핸드드립 · 핫 · 하리오 V60 02<br>코만단테 C40 · 22클릭<br>15.0g / 240g · 1:16.0 · 93℃ · 2:40</div></div>
+<div class="sec"><div class="h">후기</div><div style="font-size:12px">식을수록 단맛이 올라옴. 아이스로도 마셔보고 싶다.</div></div>
+</div></div></div>
+
+<!-- D -->
+<div class="ph-wrap"><p class="cap"><b>D</b>노트 작성 (시트, large)</p>
+<div class="phone"><div class="sb"><span>9:41</span><span class="sbi"><i class="sf" data-s="cellularbars" aria-hidden="true"></i><i class="sf" data-s="wifi" aria-hidden="true"></i><i class="sf" data-s="battery.100" aria-hidden="true"></i></span></div>
+<div class="scr">
+<div class="nb"><span>취소</span><span class="t">새 노트</span><span style="font-weight:700">저장</span></div>
+<div class="sec"><div class="h">원두</div>
+<div class="field"><span style="color:var(--text)">원두</span><span>예가체프 코체레 <span style="color:var(--text2)"><i class="sf" data-s="chevron.right" aria-hidden="true"></i></span></span></div>
+<div class="field" style="border-bottom:none;padding-bottom:0"><span style="color:var(--text)">마신 날</span><span><span class="dplus">D+14</span> <span style="background:var(--surface2);padding:1px 6px;border-radius:6px">2026. 11. 16.</span></span></div></div>
+<div class="sec"><div class="h">추출 레시피</div>
+<div class="banner" style="font-size:10.5px;padding:5px 8px;margin-bottom:4px"><span>11월 10일 레시피를 불러왔어요</span><b>비우기</b></div>
+<div class="field"><span style="color:var(--text)">추출 방식</span><span style="color:var(--text2)">핸드드립 <i class="sf" data-s="chevron.up.chevron.down" aria-hidden="true"></i></span></div>
+<div class="seg" style="margin:4px 0"><span>선택 안 함</span><span class="on">핫</span><span>아이스</span></div>
+<div class="field"><span style="color:var(--text)">드리퍼</span><span>하리오 V60 02 <span style="color:var(--text2)"><i class="sf" data-s="chevron.right" aria-hidden="true"></i></span></span></div>
+<div class="field"><span style="color:var(--text)">그라인더</span><span>코만단테 C40 <span style="color:var(--text2)"><i class="sf" data-s="chevron.right" aria-hidden="true"></i></span></span></div>
+<div class="field"><span style="color:var(--text)">분쇄도</span><span>22 <span style="color:var(--text2)">클릭</span></span></div>
+<div class="field"><span style="color:var(--text)">원두 / 물</span><span>15.0 g / 240 g · <span style="color:var(--text2)">1:16.0</span></span></div>
+<div class="field" style="border-bottom:none"><span style="color:var(--text)">온도 · 시간</span><span>93℃ · 2:40</span></div></div>
+<div class="sec"><div class="h">맛 그래프</div>
+<div style="display:flex;gap:8px;align-items:center"><svg class="pent" data-v="4,5,4,3,2" data-s="96"></svg>
+<div style="flex:1;display:flex;flex-direction:column;gap:3px;font-size:10px" class="axisMini" data-v="4,5,4,3,2"></div></div>
+<div style="font-size:10.5px;color:var(--accent);margin-top:4px">지우기</div></div>
+<div class="sec"><div class="h">향과 맛</div>
+<div class="field"><span style="color:var(--text)">프레그런스</span><span style="display:flex;gap:3px;align-items:center"><span class="chip g-floral" style="font-size:10px;padding:1px 6px">자스민</span><span style="color:var(--text2)"><i class="sf" data-s="chevron.right" aria-hidden="true"></i></span></span></div>
+<div class="field"><span style="color:var(--text)">컵 노트</span><span style="display:flex;gap:3px;align-items:center"><span class="chip g-fruit" style="font-size:10px;padding:1px 6px">복숭아</span><span class="chip g-roast" style="font-size:10px;padding:1px 6px">홍차</span><span style="color:var(--text2)"><i class="sf" data-s="chevron.right" aria-hidden="true"></i></span></span></div>
+<div class="field" style="border-bottom:none"><span class="ph">태그에 없는 향과 맛</span><span></span></div></div>
+<div class="sec"><div class="h">평가</div><div class="seg" style="margin-bottom:6px"><span>없음</span><span class="on">O</span><span>△</span><span>X</span></div><div style="color:var(--accent);font-size:12px">내 점수 추가</div></div>
+</div></div></div>
+
+<!-- E -->
+<div class="ph-wrap"><p class="cap"><b>E</b>원두 선택 (D 시트 안에서 push)</p>
+<div class="phone"><div class="sb"><span>9:41</span><span class="sbi"><i class="sf" data-s="cellularbars" aria-hidden="true"></i><i class="sf" data-s="wifi" aria-hidden="true"></i><i class="sf" data-s="battery.100" aria-hidden="true"></i></span></div>
+<div class="scr">
+<div class="nb"><span class="back"><i class="sf" data-s="chevron.left" aria-hidden="true"></i>새 노트</span><span class="t">원두 선택</span><span></span></div>
+<div class="search"><i class="sf" data-s="magnifyingglass" aria-hidden="true"></i> 이름, 로스터리</div>
+<div class="sec" style="padding:2px 12px"><div class="li" style="color:var(--accent);font-weight:600;border-bottom:none"><i class="sf" data-s="plus.circle" aria-hidden="true"></i> 새 원두 등록</div></div>
+<p style="font-size:10.5px;color:var(--text2);margin:8px 0 4px 4px;font-weight:600">마시는 중</p>
+<div class="sec" style="padding:2px 12px">
+<div class="li"><div style="flex:1"><div style="font-weight:600">에티오피아 예가체프 코체레</div><div style="font-size:10.5px;color:var(--text2)">모래알 로스터스 · 11.02 · 오늘 <span class="dplus">D+14</span> · 노트 3</div></div><span style="color:var(--accent);font-weight:700"><i class="sf" data-s="checkmark" aria-hidden="true"></i></span></div>
+<div class="li"><div><div style="font-weight:600">하우스 블렌드 가을</div><div style="font-size:10.5px;color:var(--text2)">느린오후 커피 · 블렌드 · 11.05 · 오늘 <span class="dplus">D+11</span> · 노트 1</div></div></div>
+<div class="li" style="border-bottom:none"><div><div style="font-weight:600">과테말라 엘 인헤르토</div><div style="font-size:10.5px;color:var(--text2)">블루밍 빈 · 로스팅일 모름 · 노트 1</div></div></div></div>
+<p style="font-size:10.5px;color:var(--text2);margin:8px 0 4px 4px;font-weight:600">다 마신 원두</p>
+<div class="sec" style="padding:2px 12px"><div class="li" style="border-bottom:none"><div><div style="font-weight:600">케냐 키루가 AA</div><div style="font-size:10.5px;color:var(--text2)">모래알 로스터스 · 노트 4</div></div></div></div>
+</div></div></div>
+
+<!-- F -->
+<div class="ph-wrap"><p class="cap"><b>F</b>원두 등록 (E에서 push)</p>
+<div class="phone"><div class="sb"><span>9:41</span><span class="sbi"><i class="sf" data-s="cellularbars" aria-hidden="true"></i><i class="sf" data-s="wifi" aria-hidden="true"></i><i class="sf" data-s="battery.100" aria-hidden="true"></i></span></div>
+<div class="scr">
+<div class="nb"><span class="back"><i class="sf" data-s="chevron.left" aria-hidden="true"></i>원두 선택</span><span class="t">새 원두</span><span style="font-weight:700">저장</span></div>
+<div class="sec"><div class="h">기본</div>
+<div class="field"><span style="color:var(--text)">원두 이름</span><span>하우스 블렌드 가을</span></div>
+<div class="field" style="border-bottom:none"><span style="color:var(--text)">로스터리</span><span class="ph">필수</span></div>
+<div class="err">로스터리를 입력해 주세요</div></div>
+<div class="sec"><div class="h"><span>원산지 <span class="dplus">블렌드</span></span></div>
+<div class="field"><span style="color:var(--text)">에티오피아 · 워시드</span><span>60% <span style="color:var(--text2)"><i class="sf" data-s="chevron.right" aria-hidden="true"></i></span></span></div>
+<div class="field"><span style="color:var(--text)">브라질 · 내추럴</span><span>40% <span style="color:var(--text2)"><i class="sf" data-s="chevron.right" aria-hidden="true"></i></span></span></div>
+<div class="field" style="color:var(--accent)"><span style="color:var(--accent)"><i class="sf" data-s="plus.circle" aria-hidden="true"></i> 구성 원두 추가</span><span></span></div>
+<div class="field" style="border-bottom:none"><span style="color:var(--text)">비율 모름</span><span style="display:inline-block;width:34px;height:20px;border-radius:10px;background:var(--line)"></span></div>
+<div style="font-size:10.5px;color:var(--text2)">합계 100% · 비율을 모르면 "비율 모름"을 켜세요</div></div>
+<div class="sec"><div class="field" style="border-bottom:none"><span style="color:var(--text)">구매 용량</span><span>200 <span style="color:var(--text2)">g</span></span></div></div>
+<div class="sec"><div class="h">로스팅</div>
+<div class="field"><span style="color:var(--text)">로스팅 정도</span><span style="color:var(--text2)">미디엄 라이트 <i class="sf" data-s="chevron.up.chevron.down" aria-hidden="true"></i></span></div>
+<div class="field"><span style="color:var(--text)">로스팅일 모름</span><span style="display:inline-block;width:34px;height:20px;border-radius:10px;background:var(--line)"></span></div>
+<div class="field" style="border-bottom:none"><span style="color:var(--text)">로스팅일</span><span style="background:var(--surface2);padding:1px 6px;border-radius:6px">2026. 11. 12.</span></div></div>
+<div class="sec"><div class="h">로스터리 노트</div><div style="font-size:12px">밀크초콜릿, 자두, 캐러멜</div></div>
+</div></div></div>
+
+<!-- G -->
+<div class="ph-wrap"><p class="cap"><b>G</b>컵 노트 태그 (계열 → 하위, push)</p>
+<div class="phone"><div class="sb"><span>9:41</span><span class="sbi"><i class="sf" data-s="cellularbars" aria-hidden="true"></i><i class="sf" data-s="wifi" aria-hidden="true"></i><i class="sf" data-s="battery.100" aria-hidden="true"></i></span></div>
+<div class="scr">
+<div class="nb"><span class="back"><i class="sf" data-s="chevron.left" aria-hidden="true"></i>컵 노트</span><span class="t">과일</span><span></span></div>
+<div class="search"><i class="sf" data-s="magnifyingglass" aria-hidden="true"></i> 태그 검색</div>
+<p style="font-size:10.5px;color:var(--text2);margin:0 0 4px">선택됨 3/10</p>
+<p style="display:flex;gap:4px;margin:0 0 6px;overflow:hidden"><span class="chip g-fruit">복숭아</span><span class="chip g-roast">홍차</span><span class="chip g-sweet">꿀</span></p>
+<div class="sec" style="padding:2px 12px">
+<div class="li">‘과일’ 전체<span class="ch"></span></div>
+<div class="li">시트러스<span class="ch"><i class="sf" data-s="chevron.right" aria-hidden="true"></i></span></div>
+<div class="li">베리<span class="ch"><i class="sf" data-s="chevron.right" aria-hidden="true"></i></span></div>
+<div class="li"><b>핵과</b><span class="ch"><span style="color:var(--accent)">복숭아</span> <i class="sf" data-s="chevron.right" aria-hidden="true"></i></span></div>
+<div class="li">사과·배<span class="ch"><i class="sf" data-s="chevron.right" aria-hidden="true"></i></span></div>
+<div class="li">포도<span class="ch"><i class="sf" data-s="chevron.right" aria-hidden="true"></i></span></div>
+<div class="li">열대과일<span class="ch"><i class="sf" data-s="chevron.right" aria-hidden="true"></i></span></div>
+<div class="li" style="border-bottom:none">말린 과일<span class="ch"><i class="sf" data-s="chevron.right" aria-hidden="true"></i></span></div></div>
+<p style="font-size:10px;color:var(--text2);margin-top:8px">하위가 있는 행은 행 전체가 push. 이 단계("과일") 자체를 고르려면 맨 위 "‘과일’ 전체"를 탭해 체크. 하위가 없는 행은 행 전체가 체크 토글. 선택된 칩을 탭하면 해제.</p>
+</div></div></div>
+
+<!-- G2 -->
+<div class="ph-wrap"><p class="cap"><b>G</b>플레이버 태그 첫 화면 (B에서 필터 모드 시트)</p>
+<div class="phone"><div class="sb"><span>9:41</span><span class="sbi"><i class="sf" data-s="cellularbars" aria-hidden="true"></i><i class="sf" data-s="wifi" aria-hidden="true"></i><i class="sf" data-s="battery.100" aria-hidden="true"></i></span></div>
+<div class="scr" style="padding:0">
+<div class="dim"></div>
+<div class="sheet" style="top:40px">
+<div class="grab"></div>
+<div class="nb"><span>취소</span><span class="t">태그로 거르기</span><span></span></div>
+<div class="search"><i class="sf" data-s="magnifyingglass" aria-hidden="true"></i> 태그 검색</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+<div style="min-height:64px" class="tile g-fruit">과일<small>시트러스 · 베리 · 핵과…</small></div>
+<div style="min-height:64px" class="tile g-floral">꽃<small>자스민 · 장미 · 캐모마일</small></div>
+<div style="min-height:64px" class="tile g-sweet">단맛<small>꿀 · 캐러멜 · 흑설탕</small></div>
+<div style="min-height:64px" class="tile g-nutty">견과·초콜릿<small>아몬드 · 다크초콜릿</small></div>
+<div style="min-height:64px" class="tile g-spice">향신료·허브<small>시나몬 · 정향 · 민트</small></div>
+<div style="min-height:64px" class="tile g-roast">차·곡물·로스트<small>홍차 · 몰트 · 스모키</small></div>
+<div style="min-height:64px" class="tile g-ferm">발효·주류<small>와인 · 럼 · 위스키</small></div>
+<div style="min-height:64px" class="tile g-defect">결점<small>풋내 · 종이 · 탄맛</small></div>
+</div>
+<p style="font-size:10.5px;color:var(--text2);margin:12px 0 4px">검색 예시 “베리”</p>
+<div class="li">베리<span class="ch" style="font-size:10px">과일</span></div>
+<div class="li">블루베리<span class="ch" style="font-size:10px">과일 › 베리</span></div>
+</div></div></div></div>
+
+<!-- H -->
+<div class="ph-wrap"><p class="cap"><b>H</b>원두 목록</p>
+<div class="phone"><div class="sb"><span>9:41</span><span class="sbi"><i class="sf" data-s="cellularbars" aria-hidden="true"></i><i class="sf" data-s="wifi" aria-hidden="true"></i><i class="sf" data-s="battery.100" aria-hidden="true"></i></span></div>
+<div class="scr">
+<div class="nb"><span></span><span class="tbi"><i class="sf" data-s="plus" aria-hidden="true"></i></span></div>
+<div class="lt">원두</div>
+<div class="seg" style="margin-bottom:8px"><span class="on">마시는 중</span><span>다 마심</span></div>
+<div class="search"><i class="sf" data-s="magnifyingglass" aria-hidden="true"></i> 이름, 로스터리</div>
+<div class="row" style="align-items:flex-start"><div class="mid"><div class="nm">에티오피아 예가체프 코체레</div><div class="sub">모래알 로스터스 · 에티오피아 · 워시드</div>
+<div style="font-size:11px;color:var(--text2)">11.02 · 오늘 <span class="dplus">D+14</span></div>
+<div style="font-size:11px;margin-top:4px">노트 3 · 평균 <span class="score">85.92</span></div></div><svg class="pent" data-v="4,5,4,3,2" data-s="60"></svg></div>
+<div class="row" style="align-items:flex-start"><div class="mid"><div class="nm">하우스 블렌드 가을</div><div class="sub" style="white-space:normal">느린오후 커피 · 블렌드 · 에티오피아 60% / 브라질 40%</div>
+<div style="font-size:11px;color:var(--text2)">11.05 · 오늘 <span class="dplus">D+11</span></div>
+<div style="font-size:11px;margin-top:4px">노트 1 · 평균 <span class="score">88.00</span></div></div><svg class="pent" data-v="3,3,4,4,4" data-s="60"></svg></div>
+<div class="row" style="align-items:flex-start"><div class="mid"><div class="nm">케냐 가차타 AB</div><div class="sub">모래알 로스터스 · 케냐 · 워시드</div>
+<div style="font-size:11px;color:var(--text2)">11.12 · 오늘 <span class="dplus">D+4</span></div>
+<div style="font-size:11px;margin-top:4px;color:var(--text2)">아직 노트가 없어요</div></div><svg class="pent" data-v="" data-s="60"></svg></div>
+</div>
+<div class="tab"><div><i class="sf" data-s="book.closed" aria-hidden="true"></i>노트</div><div class="on"><i class="sf" data-s="cup.and.saucer" aria-hidden="true"></i>원두</div><div><i class="sf" data-s="gearshape" aria-hidden="true"></i>설정</div></div>
+</div></div>
+
+<!-- I -->
+<div class="ph-wrap"><p class="cap"><b>I</b>원두 상세</p>
+<div class="phone"><div class="sb"><span>9:41</span><span class="sbi"><i class="sf" data-s="cellularbars" aria-hidden="true"></i><i class="sf" data-s="wifi" aria-hidden="true"></i><i class="sf" data-s="battery.100" aria-hidden="true"></i></span></div>
+<div class="scr">
+<div class="nb"><span class="back"><i class="sf" data-s="chevron.left" aria-hidden="true"></i>원두</span><span>편집</span></div>
+<p style="font-size:16px;font-weight:700;margin:4px 0 0">에티오피아 예가체프 코체레</p>
+<p style="color:var(--text2);font-size:11px;margin:0 0 8px">모래알 로스터스 · 에티오피아 74110 · 워시드 · 라이트 · 11.02 · 200g</p>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px;text-align:center">
+<div class="sec" style="margin:0;padding:6px"><div style="font-size:10px;color:var(--text2)">노트</div><div class="score">3</div></div>
+<div class="sec" style="margin:0;padding:6px"><div style="font-size:10px;color:var(--text2)">평균</div><div class="score">85.92</div></div>
+<div class="sec" style="margin:0;padding:6px"><div style="font-size:10px;color:var(--text2)">최고</div><div class="score">86.25</div></div></div>
+<div class="sec"><div class="h">기록 표</div>
+<table class="mini"><tr><th>D+N</th><th>날짜</th><th>점수</th><th>드리퍼</th><th>분쇄</th><th>비율</th><th>재구매</th></tr>
+<tr><td>D+4</td><td>11.06</td><td>86.00</td><td>V60</td><td>24</td><td>1:15.0</td><td>O</td></tr>
+<tr><td>D+8</td><td>11.10</td><td>85.50</td><td>V60</td><td>22</td><td>1:16.0</td><td>△</td></tr>
+<tr><td>D+14</td><td>11.16</td><td>86.25</td><td>V60</td><td>22</td><td>1:16.0</td><td>O</td></tr></table></div>
+<div class="sec" style="display:flex;gap:8px;align-items:center"><svg class="pent" data-v="4,5,4,3,2" data-s="70"></svg><div><span class="dplus">D+14</span> <span class="score">86.25</span><p style="display:flex;gap:4px;margin:4px 0 0"><span class="chip g-fruit" style="font-size:10px">복숭아</span><span class="chip g-roast" style="font-size:10px">홍차</span></p></div></div>
+<div class="btn" style="position:absolute;left:14px;right:14px;bottom:14px">이 원두로 노트 쓰기</div>
+</div></div></div>
+
+<!-- J -->
+<div class="ph-wrap"><p class="cap"><b>J</b>설정 (익명 상태)</p>
+<div class="phone"><div class="sb"><span>9:41</span><span class="sbi"><i class="sf" data-s="cellularbars" aria-hidden="true"></i><i class="sf" data-s="wifi" aria-hidden="true"></i><i class="sf" data-s="battery.100" aria-hidden="true"></i></span></div>
+<div class="scr">
+<div class="lt" style="margin-top:32px">설정</div>
+<div class="sec"><div class="h">계정</div>
+<div class="field" style="border-bottom:none"><span style="color:var(--accent)">Apple로 계속하기</span><span></span></div></div>
+<p style="font-size:10.5px;color:var(--text2);margin:-4px 4px 8px">보관하지 않으면 앱을 지우거나 기기를 바꿀 때 기록이 사라져요. 예전에 보관한 기록도 여기서 불러올 수 있어요.</p>
+<div class="sec"><div class="h">기록</div><div class="field" style="border-bottom:none"><span style="color:var(--text)">내 장비</span><span style="color:var(--text2)">3 <i class="sf" data-s="chevron.right" aria-hidden="true"></i></span></div></div>
+<div class="sec"><div class="h">정보</div>
+<div class="field"><span style="color:var(--text)">버전</span><span style="color:var(--text2)">1.0.0</span></div>
+<div class="field"><span style="color:var(--text)">개인정보처리방침</span><span style="color:var(--text2)"><i class="sf" data-s="chevron.right" aria-hidden="true"></i></span></div>
+<div class="field"><span style="color:var(--text)">오픈소스 라이선스</span><span style="color:var(--text2)"><i class="sf" data-s="chevron.right" aria-hidden="true"></i></span></div>
+<div class="field" style="border-bottom:none"><span style="color:var(--text)">플레이버 태그 안내</span><span style="color:var(--text2)"><i class="sf" data-s="chevron.right" aria-hidden="true"></i></span></div></div>
+<div class="sec"><div class="field" style="border-bottom:none"><span style="color:var(--danger)">모든 데이터 삭제</span><span></span></div></div>
+<p style="font-size:10.5px;color:var(--text2);margin:0 4px">Apple 연결 후에는 "Sign in with Apple 사용 중", 로그아웃, 계정 삭제가 보여요.</p>
+</div>
+<div class="tab"><div><i class="sf" data-s="book.closed" aria-hidden="true"></i>노트</div><div><i class="sf" data-s="cup.and.saucer" aria-hidden="true"></i>원두</div><div class="on"><i class="sf" data-s="gearshape" aria-hidden="true"></i>설정</div></div>
+</div></div>
+
+<!-- K -->
+<div class="ph-wrap"><p class="cap"><b>K</b>내 장비 (J에서 push)</p>
+<div class="phone"><div class="sb"><span>9:41</span><span class="sbi"><i class="sf" data-s="cellularbars" aria-hidden="true"></i><i class="sf" data-s="wifi" aria-hidden="true"></i><i class="sf" data-s="battery.100" aria-hidden="true"></i></span></div>
+<div class="scr">
+<div class="nb"><span class="back"><i class="sf" data-s="chevron.left" aria-hidden="true"></i>설정</span><span class="t">내 장비</span><span class="tbi"><i class="sf" data-s="plus" aria-hidden="true"></i></span></div>
+<p style="font-size:10.5px;color:var(--text2);margin:10px 0 4px 4px;font-weight:600">드리퍼·추출 기구</p>
+<div class="sec" style="padding:2px 12px">
+<div class="li"><div style="flex:1"><div style="font-weight:600">하리오 V60 02 세라믹</div><div style="font-size:10.5px;color:var(--text2)">노트 12</div></div><span class="ch"><i class="sf" data-s="chevron.right" aria-hidden="true"></i></span></div>
+<div class="li" style="border-bottom:none"><div style="flex:1"><div style="font-weight:600">오리가미 드리퍼 M</div><div style="font-size:10.5px;color:var(--text2)">노트 3</div></div><span class="ch"><i class="sf" data-s="chevron.right" aria-hidden="true"></i></span></div></div>
+<p style="font-size:10.5px;color:var(--text2);margin:10px 0 4px 4px;font-weight:600">그라인더</p>
+<div class="sec" style="padding:2px 12px">
+<div class="li" style="border-bottom:none"><div style="flex:1"><div style="font-weight:600">코만단테 C40</div><div style="font-size:10.5px;color:var(--text2)">단위: 클릭 · 노트 15</div></div><span class="ch"><i class="sf" data-s="chevron.right" aria-hidden="true"></i></span></div></div>
+<p style="font-size:10.5px;color:var(--text2);margin:16px 0 4px 4px;font-weight:600">선택 모드 (D → 그라인더)</p>
+<div class="sec" style="padding:2px 12px">
+<div class="li">선택 안 함</div>
+<div class="li">코만단테 C40<span class="ch" style="color:var(--accent);font-weight:700"><i class="sf" data-s="checkmark" aria-hidden="true"></i></span></div>
+<div class="li" style="border-bottom:none;color:var(--accent);font-weight:600"><i class="sf" data-s="plus.circle" aria-hidden="true"></i> 새 그라인더 추가</div></div>
+</div></div></div>
+
+<!-- L -->
+<div class="ph-wrap"><p class="cap"><b>L</b>장비 등록 (K "+"에서 시트)</p>
+<div class="phone"><div class="sb"><span>9:41</span><span class="sbi"><i class="sf" data-s="cellularbars" aria-hidden="true"></i><i class="sf" data-s="wifi" aria-hidden="true"></i><i class="sf" data-s="battery.100" aria-hidden="true"></i></span></div>
+<div class="scr">
+<div class="nb" style="margin-top:8px"><span>취소</span><span class="t">장비 추가</span><span style="font-weight:700">저장</span></div>
+<div class="seg" style="margin:10px 0"><span>드리퍼·추출 기구</span><span class="on">그라인더</span></div>
+<div class="sec">
+<div class="field"><span style="color:var(--text)">이름</span><span>1Zpresso K-Ultra</span></div>
+<div class="field" style="border-bottom:none"><span style="color:var(--text)">분쇄도 단위</span><span>클릭</span></div></div>
+<div class="sec"><div class="h">메모</div><div style="font-size:12px;color:var(--text3)">메모 (선택)</div></div>
+<p style="font-size:10.5px;color:var(--text2);margin:0 4px">분쇄도 단위는 레시피에서 "22클릭"처럼 숫자 뒤에 붙어요.</p>
+</div></div></div>
+
+</div>
+
+<h2>8. 인터랙션 노트</h2>
+<table>
+<tr><th>상황</th><th>동작</th></tr>
+<tr><td>오각형 값 변경</td><td><code>.animation(.snappy, value: profile)</code>(Reduce Motion이면 끔), 축 세그먼트 탭마다 선택 햅틱</td></tr>
+<tr><td>저장 성공</td><td><code>.sensoryFeedback(.success)</code>, 작성 모드는 상세(C)로 교체</td></tr>
+<tr><td>검증 오류</td><td>해당 섹션으로 스크롤 + 필드 아래 <code>danger</code> 텍스트 + <code>.sensoryFeedback(.error)</code></td></tr>
+<tr><td>태그 10개 선택됨</td><td>선택 안 된 행 비활성화, 목록 상단 문구 "10개까지 고를 수 있어요", <code>.sensoryFeedback(.warning)</code></td></tr>
+<tr><td>삭제</td><td>시스템 <code>.swipeActions</code> 또는 <code>.contextMenu</code> → <code>.confirmationDialog</code>(파괴적 버튼 빨간색)</td></tr>
+<tr><td>작성 시트 닫기</td><td>변경 사항이 있으면 스와이프 닫기를 막고, UIKit 델리게이트로 스와이프 시도를 감지해 "변경 사항 버리기 / 계속 편집" 확인 메뉴. "취소"도 같은 메뉴. 변경 없으면 바로 닫힘</td></tr>
+<tr><td>오프라인 저장</td><td>시트 닫힘 + 해당 행에 구름 아이콘, 목록 위 "동기화 대기 N개". 동기화되면 아이콘 사라짐(VoiceOver 공지 없음)</td></tr>
+<tr><td>계정 삭제 진행</td><td>전체 화면 <code>ProgressView</code> "삭제하고 있어요", 실패 시 alert + "다시 시도"</td></tr>
+<tr><td>Apple 계정 연결 완료</td><td>목록 위 인라인 확인 문구 3초 + VoiceOver 공지</td></tr>
+<tr><td>빈 상태</td><td><code>ContentUnavailableView</code>: 점선 오각형 + 한 줄 설명 + 주 버튼 1개</td></tr>
+<tr><td>VoiceOver</td><td>오각형은 하나의 요소로 묶고 라벨 "아로마 4, 산미 5, 단맛 4, 후미 3, 바디 2"</td></tr>
+</table>
+
+</div>
+<script>
+const SF={
+"book.closed":'<path d="M6.5 3h11a1 1 0 0 1 1 1v15a1 1 0 0 1-1 1h-11A2.5 2.5 0 0 1 4 17.5v-12A2.5 2.5 0 0 1 6.5 3z"/><path d="M8 3v17"/><path d="M4 17.5A2.5 2.5 0 0 1 6.5 15h12"/>',
+"cup.and.saucer":'<path d="M5 7h11v5a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5z"/><path d="M16 8.5h1.3a2.5 2.5 0 0 1 0 5H16"/><path d="M3 20h17"/>',
+"gearshape":'<path d="M12 3l1.6 2.2 2.7-.6.6 2.7 2.4 1.3-1.1 2.5 1.1 2.5-2.4 1.3-.6 2.7-2.7-.6L12 21l-1.6-2.2-2.7.6-.6-2.7-2.4-1.3L5.8 12 4.7 9.6l2.4-1.3.6-2.7 2.7.6z"/><circle cx="12" cy="12" r="3"/>',
+"cellularbars":'<path d="M5 18v-2M10 18v-5M15 18v-8M20 18V7" stroke-width="2.6"/>',
+"wifi":'<path d="M4 10a12 12 0 0 1 16 0M7 13.3a7.5 7.5 0 0 1 10 0M10 16.5a3 3 0 0 1 4 0"/><circle cx="12" cy="19" r=".9" fill="currentColor"/>',
+"battery.100":'<rect x="3" y="8" width="16" height="9" rx="2.5"/><rect x="5" y="10" width="12" height="5" rx="1" fill="currentColor" stroke="none"/><path d="M21 11v3"/>',
+"line.3.horizontal.decrease.circle":'<circle cx="12" cy="12" r="9"/><path d="M7.5 9h9M9 12h6M10.5 15h3"/>',
+"square.and.pencil":'<path d="M11 5H6a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-5"/><path d="M17.5 3.5a2.1 2.1 0 0 1 3 3L12 15l-4 1 1-4z"/>',
+"ellipsis.circle":'<circle cx="12" cy="12" r="9"/><circle cx="8" cy="12" r=".8" fill="currentColor"/><circle cx="12" cy="12" r=".8" fill="currentColor"/><circle cx="16" cy="12" r=".8" fill="currentColor"/>',
+"plus":'<path d="M12 5v14M5 12h14"/>',
+"plus.circle":'<circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/>',
+"xmark":'<path d="M6 6l12 12M18 6L6 18"/>',
+"checkmark":'<path d="M5 12.5l4.5 4.5L19 7"/>',
+"magnifyingglass":'<circle cx="10.5" cy="10.5" r="6"/><path d="M15 15l5 5"/>',
+"chevron.right":'<path d="M9 5l7 7-7 7"/>',
+"chevron.left":'<path d="M15 5l-7 7 7 7"/>',
+"chevron.up.chevron.down":'<path d="M8 9l4-4 4 4M8 15l4 4 4-4"/>',
+"icloud.and.arrow.up":'<path d="M7 18h-.5A4.5 4.5 0 0 1 6 9.1 6 6 0 0 1 17.6 8 4.5 4.5 0 0 1 17.5 18H17"/><path d="M12 20v-8M9 15l3-3 3 3"/>'
+};
+document.querySelectorAll('i.sf').forEach(el=>{const d=SF[el.dataset.s];if(!d)return;
+ const onTab=el.closest('.tab .on');
+ el.innerHTML='<svg viewBox="0 0 24 24" fill="'+(onTab?'currentColor':'none')+'" fill-opacity="'+(onTab?'.18':'1')+'" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+d+'</svg>';
+ el.title=el.dataset.s;});
+
+const AX=["아로마","산미","단맛","후미","바디"];
+function drawPent(svg){
+  const s=+svg.dataset.s||88, lab=svg.dataset.l==="1", pad=lab?26:3, r=s/2-pad, c=s/2;
+  const raw=(svg.dataset.v||"").trim(); const vals=raw?raw.split(",").map(Number):null;
+  const pt=(i,rr)=>{const a=(-90+72*i)*Math.PI/180;return[(c+rr*Math.cos(a)).toFixed(1),(c+rr*Math.sin(a)).toFixed(1)]};
+  const poly=(rr)=>[0,1,2,3,4].map(i=>pt(i,rr).join(",")).join(" ");
+  let h="";
+  if(s>=120){for(let l=1;l<=5;l++)h+=`<polygon points="${poly(r*l/5)}" fill="none" stroke="var(--pent-grid)" stroke-width="0.8"/>`;
+    for(let i=0;i<5;i++){const p=pt(i,r);h+=`<line x1="${c}" y1="${c}" x2="${p[0]}" y2="${p[1]}" stroke="var(--pent-grid)" stroke-width="0.8"/>`}}
+  else h+=`<polygon points="${poly(r)}" fill="none" stroke="var(--pent-grid)" stroke-width="1" ${vals?"":'stroke-dasharray="3 3"'}/>`;
+  if(!vals&&s>=120)h=h.replace(/stroke="var\(--pent-grid\)"/g,'stroke="var(--pent-grid)" stroke-dasharray="3 3"');
+  if(vals){const pts=vals.map((v,i)=>pt(i,r*v/5).join(",")).join(" ");
+    h+=`<polygon points="${pts}" fill="var(--pent-fill)" stroke="var(--accent)" stroke-width="${s<60?1.2:1.6}" stroke-linejoin="round"/>`;
+    if(s>=88)vals.forEach((v,i)=>{const p=pt(i,r*v/5);h+=`<circle cx="${p[0]}" cy="${p[1]}" r="${s>=150?2.6:2}" fill="var(--accent)"/>`});}
+  if(lab)AX.forEach((t,i)=>{const p=pt(i,r+14);h+=`<text x="${p[0]}" y="${(+p[1]+4).toFixed(1)}" text-anchor="middle" font-size="${s>=150?11:9.5}" fill="var(--text2)">${t}</text>`});
+  svg.setAttribute("viewBox",`0 0 ${s} ${s}`);svg.setAttribute("width",s);svg.setAttribute("height",s);
+  svg.setAttribute("role","img");svg.setAttribute("aria-label",vals?AX.map((t,i)=>t+" "+vals[i]).join(", "):"맛 그래프 없음");
+  svg.innerHTML=h;
+}
+document.querySelectorAll("svg.pent").forEach(drawPent);
+document.querySelectorAll(".axisMini").forEach(el=>{const v=el.dataset.v.split(",").map(Number);
+  el.innerHTML=AX.map((t,i)=>`<div style="display:flex;align-items:center;gap:4px"><span style="width:30px;color:var(--text2)">${t}</span><div class="seg" style="flex:1">${[1,2,3,4,5].map(n=>`<span style="font-size:9px;padding:1px 0"${n===v[i]?' class="on"':""}>${n}</span>`).join("")}</div></div>`).join("")});
+const demo=document.getElementById("axisDemo"), dp=document.getElementById("axisPent"); let dv=[3,3,3,3,3];
+function renderDemo(){demo.innerHTML=AX.map((t,i)=>`<div style="display:flex;align-items:center;gap:8px;margin:4px 0"><span style="width:44px;font-size:13px;color:var(--text2)">${t}</span><div class="seg" style="flex:1">${[1,2,3,4,5].map(n=>`<span data-a="${i}" data-n="${n}" style="cursor:pointer"${n===dv[i]?' class="on"':""}>${n}</span>`).join("")}</div></div>`).join("");
+  dp.dataset.v=dv.join(",");drawPent(dp);}
+demo.addEventListener("click",e=>{const t=e.target.closest("[data-a]");if(!t)return;dv[+t.dataset.a]=+t.dataset.n;renderDemo();});
+renderDemo();
+const btn=document.getElementById("themeBtn");
+function setTheme(t){document.documentElement.dataset.theme=t;btn.textContent=t==="dark"?"라이트 모드로 보기":"다크 모드로 보기";}
+setTheme(window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");
+btn.addEventListener("click",()=>setTheme(document.documentElement.dataset.theme==="dark"?"light":"dark"));
+</script>
+</body>
+</html>

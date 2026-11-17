@@ -1,0 +1,888 @@
+{
+  "$schema": "flavor_taxonomy.schema.json",
+  "version": 1,
+  "updated": "2026-11-17",
+  "note": "SCA·WCR 플레이버휠과 WCR Sensory Lexicon을 참고한 자체 분류. id는 영구 불변. 태그를 없앨 때는 deprecated: true를 추가한다.",
+  "nodes": [
+    {
+      "id": "fruit",
+      "parentId": null,
+      "level": 1,
+      "nameKo": "과일",
+      "refTerm": "Fruity",
+      "group": "fruit"
+    },
+    {
+      "id": "fruit.citrus",
+      "parentId": "fruit",
+      "level": 2,
+      "nameKo": "시트러스",
+      "refTerm": "Citrus Fruit",
+      "group": "fruit"
+    },
+    {
+      "id": "fruit.citrus.lemon",
+      "parentId": "fruit.citrus",
+      "level": 3,
+      "nameKo": "레몬",
+      "refTerm": "Lemon",
+      "group": "fruit"
+    },
+    {
+      "id": "fruit.citrus.lime",
+      "parentId": "fruit.citrus",
+      "level": 3,
+      "nameKo": "라임",
+      "refTerm": "Lime",
+      "group": "fruit"
+    },
+    {
+      "id": "fruit.citrus.orange",
+      "parentId": "fruit.citrus",
+      "level": 3,
+      "nameKo": "오렌지",
+      "refTerm": "Orange",
+      "group": "fruit"
+    },
+    {
+      "id": "fruit.citrus.grapefruit",
+      "parentId": "fruit.citrus",
+      "level": 3,
+      "nameKo": "자몽",
+      "refTerm": "Grapefruit",
+      "group": "fruit"
+    },
+    {
+      "id": "fruit.citrus.mandarin",
+      "parentId": "fruit.citrus",
+      "level": 3,
+      "nameKo": "귤",
+      "refTerm": "Mandarin",
+      "group": "fruit"
+    },
+    {
+      "id": "fruit.citrus.bergamot",
+      "parentId": "fruit.citrus",
+      "level": 3,
+      "nameKo": "베르가못",
+      "refTerm": "Bergamot",
+      "group": "fruit"
+    },
+    {
+      "id": "fruit.citrus.yuzu",
+      "parentId": "fruit.citrus",
+      "level": 3,
+      "nameKo": "유자",
+      "refTerm": "Yuzu",
+      "group": "fruit"
+    },
+    {
+      "id": "fruit.berry",
+      "parentId": "fruit",
+      "level": 2,
+      "nameKo": "베리",
+      "refTerm": "Berry",
+      "group": "fruit"
+    },
+    {
+      "id": "fruit.berry.strawberry",
+      "parentId": "fruit.berry",
+      "level": 3,
+      "nameKo": "딸기",
+      "refTerm": "Strawberry",
+      "group": "fruit"
+    },
+    {
+      "id": "fruit.berry.raspberry",
+      "parentId": "fruit.berry",
+      "level": 3,
+      "nameKo": "라즈베리",
+      "refTerm": "Raspberry",
+      "group": "fruit"
+    },
+    {
+      "id": "fruit.berry.blueberry",
+      "parentId": "fruit.berry",
+      "level": 3,
+      "nameKo": "블루베리",
+      "refTerm": "Blueberry",
+      "group": "fruit"
+    },
+    {
+      "id": "fruit.berry.blackberry",
+      "parentId": "fruit.berry",
+      "level": 3,
+      "nameKo": "블랙베리",
+      "refTerm": "Blackberry",
+      "group": "fruit"
+    },
+    {
+      "id": "fruit.berry.cranberry",
+      "parentId": "fruit.berry",
+      "level": 3,
+      "nameKo": "크랜베리",
+      "refTerm": "Cranberry",
+      "group": "fruit"
+    },
+    {
+      "id": "fruit.berry.blackcurrant",
+      "parentId": "fruit.berry",
+      "level": 3,
+      "nameKo": "블랙커런트",
+      "refTerm": "Blackcurrant",
+      "group": "fruit"
+    },
+    {
+      "id": "fruit.stone",
+      "parentId": "fruit",
+      "level": 2,
+      "nameKo": "핵과",
+      "refTerm": "Stone Fruit",
+      "group": "fruit"
+    },
+    {
+      "id": "fruit.stone.peach",
+      "parentId": "fruit.stone",
+      "level": 3,
+      "nameKo": "복숭아",
+      "refTerm": "Peach",
+      "group": "fruit"
+    },
+    {
+      "id": "fruit.stone.nectarine",
+      "parentId": "fruit.stone",
+      "level": 3,
+      "nameKo": "천도복숭아",
+      "refTerm": "Nectarine",
+      "group": "fruit"
+    },
+    {
+      "id": "fruit.stone.apricot",
+      "parentId": "fruit.stone",
+      "level": 3,
+      "nameKo": "살구",
+      "refTerm": "Apricot",
+      "group": "fruit"
+    },
+    {
+      "id": "fruit.stone.plum",
+      "parentId": "fruit.stone",
+      "level": 3,
+      "nameKo": "자두",
+      "refTerm": "Plum",
+      "group": "fruit"
+    },
+    {
+      "id": "fruit.stone.cherry",
+      "parentId": "fruit.stone",
+      "level": 3,
+      "nameKo": "체리",
+      "refTerm": "Cherry",
+      "group": "fruit"
+    },
+    {
+      "id": "fruit.pome",
+      "parentId": "fruit",
+      "level": 2,
+      "nameKo": "사과·배",
+      "refTerm": null,
+      "group": "fruit"
+    },
+    {
+      "id": "fruit.pome.apple",
+      "parentId": "fruit.pome",
+      "level": 3,
+      "nameKo": "사과",
+      "refTerm": "Apple",
+      "group": "fruit"
+    },
+    {
+      "id": "fruit.pome.green_apple",
+      "parentId": "fruit.pome",
+      "level": 3,
+      "nameKo": "청사과",
+      "refTerm": "Green Apple",
+      "group": "fruit"
+    },
+    {
+      "id": "fruit.pome.pear",
+      "parentId": "fruit.pome",
+      "level": 3,
+      "nameKo": "배",
+      "refTerm": "Pear",
+      "group": "fruit"
+    },
+    {
+      "id": "fruit.grape",
+      "parentId": "fruit",
+      "level": 2,
+      "nameKo": "포도",
+      "refTerm": "Grape",
+      "group": "fruit"
+    },
+    {
+      "id": "fruit.grape.white_grape",
+      "parentId": "fruit.grape",
+      "level": 3,
+      "nameKo": "청포도",
+      "refTerm": "White Grape",
+      "group": "fruit"
+    },
+    {
+      "id": "fruit.tropical",
+      "parentId": "fruit",
+      "level": 2,
+      "nameKo": "열대과일",
+      "refTerm": "Tropical Fruit",
+      "group": "fruit"
+    },
+    {
+      "id": "fruit.tropical.pineapple",
+      "parentId": "fruit.tropical",
+      "level": 3,
+      "nameKo": "파인애플",
+      "refTerm": "Pineapple",
+      "group": "fruit"
+    },
+    {
+      "id": "fruit.tropical.mango",
+      "parentId": "fruit.tropical",
+      "level": 3,
+      "nameKo": "망고",
+      "refTerm": "Mango",
+      "group": "fruit"
+    },
+    {
+      "id": "fruit.tropical.passion_fruit",
+      "parentId": "fruit.tropical",
+      "level": 3,
+      "nameKo": "패션프루트",
+      "refTerm": "Passion Fruit",
+      "group": "fruit"
+    },
+    {
+      "id": "fruit.tropical.lychee",
+      "parentId": "fruit.tropical",
+      "level": 3,
+      "nameKo": "리치",
+      "refTerm": "Lychee",
+      "group": "fruit"
+    },
+    {
+      "id": "fruit.tropical.papaya",
+      "parentId": "fruit.tropical",
+      "level": 3,
+      "nameKo": "파파야",
+      "refTerm": "Papaya",
+      "group": "fruit"
+    },
+    {
+      "id": "fruit.tropical.coconut",
+      "parentId": "fruit.tropical",
+      "level": 3,
+      "nameKo": "코코넛",
+      "refTerm": "Coconut",
+      "group": "fruit"
+    },
+    {
+      "id": "fruit.dried",
+      "parentId": "fruit",
+      "level": 2,
+      "nameKo": "말린 과일",
+      "refTerm": "Dried Fruit",
+      "group": "fruit"
+    },
+    {
+      "id": "fruit.dried.raisin",
+      "parentId": "fruit.dried",
+      "level": 3,
+      "nameKo": "건포도",
+      "refTerm": "Raisin",
+      "group": "fruit"
+    },
+    {
+      "id": "fruit.dried.prune",
+      "parentId": "fruit.dried",
+      "level": 3,
+      "nameKo": "건자두",
+      "refTerm": "Prune",
+      "group": "fruit"
+    },
+    {
+      "id": "fruit.dried.date",
+      "parentId": "fruit.dried",
+      "level": 3,
+      "nameKo": "대추야자",
+      "refTerm": "Date",
+      "group": "fruit"
+    },
+    {
+      "id": "fruit.dried.fig",
+      "parentId": "fruit.dried",
+      "level": 3,
+      "nameKo": "무화과",
+      "refTerm": "Fig",
+      "group": "fruit"
+    },
+    {
+      "id": "floral",
+      "parentId": null,
+      "level": 1,
+      "nameKo": "꽃",
+      "refTerm": "Floral",
+      "group": "floral"
+    },
+    {
+      "id": "floral.jasmine",
+      "parentId": "floral",
+      "level": 2,
+      "nameKo": "자스민",
+      "refTerm": "Jasmine",
+      "group": "floral"
+    },
+    {
+      "id": "floral.rose",
+      "parentId": "floral",
+      "level": 2,
+      "nameKo": "장미",
+      "refTerm": "Rose",
+      "group": "floral"
+    },
+    {
+      "id": "floral.chamomile",
+      "parentId": "floral",
+      "level": 2,
+      "nameKo": "캐모마일",
+      "refTerm": "Chamomile",
+      "group": "floral"
+    },
+    {
+      "id": "floral.orange_blossom",
+      "parentId": "floral",
+      "level": 2,
+      "nameKo": "오렌지 꽃",
+      "refTerm": "Orange Blossom",
+      "group": "floral"
+    },
+    {
+      "id": "floral.lavender",
+      "parentId": "floral",
+      "level": 2,
+      "nameKo": "라벤더",
+      "refTerm": "Lavender",
+      "group": "floral"
+    },
+    {
+      "id": "floral.elderflower",
+      "parentId": "floral",
+      "level": 2,
+      "nameKo": "엘더플라워",
+      "refTerm": "Elderflower",
+      "group": "floral"
+    },
+    {
+      "id": "sweet",
+      "parentId": null,
+      "level": 1,
+      "nameKo": "단맛",
+      "refTerm": "Sweet",
+      "group": "sweet"
+    },
+    {
+      "id": "sweet.honey",
+      "parentId": "sweet",
+      "level": 2,
+      "nameKo": "꿀",
+      "refTerm": "Honey",
+      "group": "sweet"
+    },
+    {
+      "id": "sweet.brown_sugar",
+      "parentId": "sweet",
+      "level": 2,
+      "nameKo": "흑설탕",
+      "refTerm": "Brown Sugar",
+      "group": "sweet"
+    },
+    {
+      "id": "sweet.caramel",
+      "parentId": "sweet",
+      "level": 2,
+      "nameKo": "캐러멜",
+      "refTerm": "Caramelized",
+      "group": "sweet"
+    },
+    {
+      "id": "sweet.maple_syrup",
+      "parentId": "sweet",
+      "level": 2,
+      "nameKo": "메이플 시럽",
+      "refTerm": "Maple Syrup",
+      "group": "sweet"
+    },
+    {
+      "id": "sweet.molasses",
+      "parentId": "sweet",
+      "level": 2,
+      "nameKo": "당밀",
+      "refTerm": "Molasses",
+      "group": "sweet"
+    },
+    {
+      "id": "sweet.vanilla",
+      "parentId": "sweet",
+      "level": 2,
+      "nameKo": "바닐라",
+      "refTerm": "Vanilla",
+      "group": "sweet"
+    },
+    {
+      "id": "sweet.toffee",
+      "parentId": "sweet",
+      "level": 2,
+      "nameKo": "토피",
+      "refTerm": "Toffee",
+      "group": "sweet"
+    },
+    {
+      "id": "nutty",
+      "parentId": null,
+      "level": 1,
+      "nameKo": "견과·초콜릿",
+      "refTerm": "Nutty/Cocoa",
+      "group": "nutty"
+    },
+    {
+      "id": "nutty.nut",
+      "parentId": "nutty",
+      "level": 2,
+      "nameKo": "견과",
+      "refTerm": "Nutty",
+      "group": "nutty"
+    },
+    {
+      "id": "nutty.nut.almond",
+      "parentId": "nutty.nut",
+      "level": 3,
+      "nameKo": "아몬드",
+      "refTerm": "Almond",
+      "group": "nutty"
+    },
+    {
+      "id": "nutty.nut.hazelnut",
+      "parentId": "nutty.nut",
+      "level": 3,
+      "nameKo": "헤이즐넛",
+      "refTerm": "Hazelnut",
+      "group": "nutty"
+    },
+    {
+      "id": "nutty.nut.peanut",
+      "parentId": "nutty.nut",
+      "level": 3,
+      "nameKo": "땅콩",
+      "refTerm": "Peanuts",
+      "group": "nutty"
+    },
+    {
+      "id": "nutty.nut.walnut",
+      "parentId": "nutty.nut",
+      "level": 3,
+      "nameKo": "호두",
+      "refTerm": "Walnut",
+      "group": "nutty"
+    },
+    {
+      "id": "nutty.nut.macadamia",
+      "parentId": "nutty.nut",
+      "level": 3,
+      "nameKo": "마카다미아",
+      "refTerm": "Macadamia",
+      "group": "nutty"
+    },
+    {
+      "id": "nutty.cocoa",
+      "parentId": "nutty",
+      "level": 2,
+      "nameKo": "초콜릿",
+      "refTerm": "Cocoa",
+      "group": "nutty"
+    },
+    {
+      "id": "nutty.cocoa.milk_chocolate",
+      "parentId": "nutty.cocoa",
+      "level": 3,
+      "nameKo": "밀크초콜릿",
+      "refTerm": "Milk Chocolate",
+      "group": "nutty"
+    },
+    {
+      "id": "nutty.cocoa.dark_chocolate",
+      "parentId": "nutty.cocoa",
+      "level": 3,
+      "nameKo": "다크초콜릿",
+      "refTerm": "Dark Chocolate",
+      "group": "nutty"
+    },
+    {
+      "id": "nutty.cocoa.cacao_nib",
+      "parentId": "nutty.cocoa",
+      "level": 3,
+      "nameKo": "카카오닙",
+      "refTerm": "Cacao Nib",
+      "group": "nutty"
+    },
+    {
+      "id": "spice",
+      "parentId": null,
+      "level": 1,
+      "nameKo": "향신료·허브",
+      "refTerm": "Spices",
+      "group": "spice"
+    },
+    {
+      "id": "spice.spice",
+      "parentId": "spice",
+      "level": 2,
+      "nameKo": "향신료",
+      "refTerm": "Brown Spice",
+      "group": "spice"
+    },
+    {
+      "id": "spice.spice.cinnamon",
+      "parentId": "spice.spice",
+      "level": 3,
+      "nameKo": "시나몬",
+      "refTerm": "Cinnamon",
+      "group": "spice"
+    },
+    {
+      "id": "spice.spice.clove",
+      "parentId": "spice.spice",
+      "level": 3,
+      "nameKo": "정향",
+      "refTerm": "Clove",
+      "group": "spice"
+    },
+    {
+      "id": "spice.spice.nutmeg",
+      "parentId": "spice.spice",
+      "level": 3,
+      "nameKo": "넛멕",
+      "refTerm": "Nutmeg",
+      "group": "spice"
+    },
+    {
+      "id": "spice.spice.anise",
+      "parentId": "spice.spice",
+      "level": 3,
+      "nameKo": "아니스",
+      "refTerm": "Anise",
+      "group": "spice"
+    },
+    {
+      "id": "spice.spice.pepper",
+      "parentId": "spice.spice",
+      "level": 3,
+      "nameKo": "후추",
+      "refTerm": "Pepper",
+      "group": "spice"
+    },
+    {
+      "id": "spice.spice.ginger",
+      "parentId": "spice.spice",
+      "level": 3,
+      "nameKo": "생강",
+      "refTerm": "Ginger",
+      "group": "spice"
+    },
+    {
+      "id": "spice.spice.cardamom",
+      "parentId": "spice.spice",
+      "level": 3,
+      "nameKo": "카다멈",
+      "refTerm": "Cardamom",
+      "group": "spice"
+    },
+    {
+      "id": "spice.herb",
+      "parentId": "spice",
+      "level": 2,
+      "nameKo": "허브",
+      "refTerm": "Herb-like",
+      "group": "spice"
+    },
+    {
+      "id": "spice.herb.mint",
+      "parentId": "spice.herb",
+      "level": 3,
+      "nameKo": "민트",
+      "refTerm": "Mint",
+      "group": "spice"
+    },
+    {
+      "id": "spice.herb.basil",
+      "parentId": "spice.herb",
+      "level": 3,
+      "nameKo": "바질",
+      "refTerm": "Basil",
+      "group": "spice"
+    },
+    {
+      "id": "spice.herb.lemongrass",
+      "parentId": "spice.herb",
+      "level": 3,
+      "nameKo": "레몬그라스",
+      "refTerm": "Lemongrass",
+      "group": "spice"
+    },
+    {
+      "id": "roast",
+      "parentId": null,
+      "level": 1,
+      "nameKo": "차·곡물·로스트",
+      "refTerm": null,
+      "group": "roast"
+    },
+    {
+      "id": "roast.tea",
+      "parentId": "roast",
+      "level": 2,
+      "nameKo": "차",
+      "refTerm": "Tea",
+      "group": "roast"
+    },
+    {
+      "id": "roast.tea.black_tea",
+      "parentId": "roast.tea",
+      "level": 3,
+      "nameKo": "홍차",
+      "refTerm": "Black Tea",
+      "group": "roast"
+    },
+    {
+      "id": "roast.tea.green_tea",
+      "parentId": "roast.tea",
+      "level": 3,
+      "nameKo": "녹차",
+      "refTerm": "Green Tea",
+      "group": "roast"
+    },
+    {
+      "id": "roast.tea.oolong",
+      "parentId": "roast.tea",
+      "level": 3,
+      "nameKo": "우롱차",
+      "refTerm": "Oolong",
+      "group": "roast"
+    },
+    {
+      "id": "roast.tea.earl_grey",
+      "parentId": "roast.tea",
+      "level": 3,
+      "nameKo": "얼그레이",
+      "refTerm": null,
+      "group": "roast"
+    },
+    {
+      "id": "roast.grain",
+      "parentId": "roast",
+      "level": 2,
+      "nameKo": "곡물",
+      "refTerm": "Cereal",
+      "group": "roast"
+    },
+    {
+      "id": "roast.grain.malt",
+      "parentId": "roast.grain",
+      "level": 3,
+      "nameKo": "몰트",
+      "refTerm": "Malt",
+      "group": "roast"
+    },
+    {
+      "id": "roast.grain.toast",
+      "parentId": "roast.grain",
+      "level": 3,
+      "nameKo": "토스트",
+      "refTerm": "Toast",
+      "group": "roast"
+    },
+    {
+      "id": "roast.grain.biscuit",
+      "parentId": "roast.grain",
+      "level": 3,
+      "nameKo": "비스킷",
+      "refTerm": "Biscuit",
+      "group": "roast"
+    },
+    {
+      "id": "roast.roasted",
+      "parentId": "roast",
+      "level": 2,
+      "nameKo": "로스트",
+      "refTerm": "Roasted",
+      "group": "roast"
+    },
+    {
+      "id": "roast.roasted.tobacco",
+      "parentId": "roast.roasted",
+      "level": 3,
+      "nameKo": "담배",
+      "refTerm": "Tobacco",
+      "group": "roast"
+    },
+    {
+      "id": "roast.roasted.smoky",
+      "parentId": "roast.roasted",
+      "level": 3,
+      "nameKo": "스모키",
+      "refTerm": "Smoky",
+      "group": "roast"
+    },
+    {
+      "id": "roast.roasted.cedar",
+      "parentId": "roast.roasted",
+      "level": 3,
+      "nameKo": "시더",
+      "refTerm": "Cedar",
+      "group": "roast"
+    },
+    {
+      "id": "fermented",
+      "parentId": null,
+      "level": 1,
+      "nameKo": "발효·주류",
+      "refTerm": "Alcohol/Fermented",
+      "group": "fermented"
+    },
+    {
+      "id": "fermented.wine",
+      "parentId": "fermented",
+      "level": 2,
+      "nameKo": "와인",
+      "refTerm": "Winey",
+      "group": "fermented"
+    },
+    {
+      "id": "fermented.rum",
+      "parentId": "fermented",
+      "level": 2,
+      "nameKo": "럼",
+      "refTerm": "Rum",
+      "group": "fermented"
+    },
+    {
+      "id": "fermented.whiskey",
+      "parentId": "fermented",
+      "level": 2,
+      "nameKo": "위스키",
+      "refTerm": "Whiskey",
+      "group": "fermented"
+    },
+    {
+      "id": "fermented.ferment",
+      "parentId": "fermented",
+      "level": 2,
+      "nameKo": "발효",
+      "refTerm": "Fermented",
+      "group": "fermented"
+    },
+    {
+      "id": "fermented.yogurt",
+      "parentId": "fermented",
+      "level": 2,
+      "nameKo": "요거트",
+      "refTerm": "Yogurt",
+      "group": "fermented"
+    },
+    {
+      "id": "defect",
+      "parentId": null,
+      "level": 1,
+      "nameKo": "결점",
+      "refTerm": null,
+      "group": "defect"
+    },
+    {
+      "id": "defect.green",
+      "parentId": "defect",
+      "level": 2,
+      "nameKo": "풋내",
+      "refTerm": "Green/Vegetative",
+      "group": "defect"
+    },
+    {
+      "id": "defect.papery",
+      "parentId": "defect",
+      "level": 2,
+      "nameKo": "종이",
+      "refTerm": "Papery",
+      "group": "defect"
+    },
+    {
+      "id": "defect.woody",
+      "parentId": "defect",
+      "level": 2,
+      "nameKo": "나무",
+      "refTerm": "Woody",
+      "group": "defect"
+    },
+    {
+      "id": "defect.earthy",
+      "parentId": "defect",
+      "level": 2,
+      "nameKo": "흙",
+      "refTerm": "Earthy",
+      "group": "defect"
+    },
+    {
+      "id": "defect.musty",
+      "parentId": "defect",
+      "level": 2,
+      "nameKo": "곰팡이",
+      "refTerm": "Musty",
+      "group": "defect"
+    },
+    {
+      "id": "defect.burnt",
+      "parentId": "defect",
+      "level": 2,
+      "nameKo": "탄맛",
+      "refTerm": "Burnt",
+      "group": "defect"
+    },
+    {
+      "id": "defect.ashy",
+      "parentId": "defect",
+      "level": 2,
+      "nameKo": "재",
+      "refTerm": "Ashy",
+      "group": "defect"
+    },
+    {
+      "id": "defect.rubber",
+      "parentId": "defect",
+      "level": 2,
+      "nameKo": "고무",
+      "refTerm": "Rubber",
+      "group": "defect"
+    },
+    {
+      "id": "defect.medicinal",
+      "parentId": "defect",
+      "level": 2,
+      "nameKo": "약품",
+      "refTerm": "Medicinal",
+      "group": "defect"
+    },
+    {
+      "id": "defect.sour",
+      "parentId": "defect",
+      "level": 2,
+      "nameKo": "과한 신맛",
+      "refTerm": "Sour",
+      "group": "defect"
+    }
+  ]
+}

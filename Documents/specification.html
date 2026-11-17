@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>커피콩책(가제) · Specification v1.1</title>
+<style>
+:root{--bg:#FAF7F2;--surface:#FFFFFF;--text:#2B211B;--muted:#7A6A5F;--line:#E6DDD3;--accent:#8A4B2A;--accent-soft:#F3E6DC;--ok:#3B6D11;--ok-soft:#EAF3DE;--warn:#854F0B;--warn-soft:#FAEEDA;--code:#F4EFE9}
+@media (prefers-color-scheme:dark){:root{--bg:#171310;--surface:#211B17;--text:#F2EAE2;--muted:#A99A8E;--line:#3A312A;--accent:#E0A07A;--accent-soft:#3A2A20;--ok:#97C459;--ok-soft:#24301A;--warn:#EF9F27;--warn-soft:#3A2C12;--code:#2A231E}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard","Noto Sans KR",sans-serif;line-height:1.7;font-size:15px}
+.wrap{max-width:960px;margin:0 auto;padding:32px 20px 80px}
+header{border-bottom:1px solid var(--line);padding-bottom:20px;margin-bottom:24px}
+h1{font-size:28px;margin:0 0 4px;font-weight:700}
+h2{font-size:21px;margin:48px 0 12px;padding-top:12px;border-top:1px solid var(--line)}
+h3{font-size:17px;margin:28px 0 8px}
+h4{font-size:15px;margin:18px 0 6px;color:var(--accent)}
+p{margin:8px 0}
+.meta{color:var(--muted);font-size:13px}
+nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 20px;margin:20px 0}
+nav.toc ol{margin:0;padding-left:20px;columns:2;column-gap:32px}
+nav.toc a{color:var(--text);text-decoration:none}
+nav.toc a:hover{color:var(--accent)}
+table{width:100%;border-collapse:collapse;margin:10px 0 16px;font-size:14px;background:var(--surface);border-radius:8px;overflow:hidden}
+th,td{border-bottom:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--accent-soft);font-weight:600;font-size:13px}
+.tbl{overflow-x:auto}
+code,.mono{font-family:"SF Mono",ui-monospace,Menlo,monospace;font-size:13px;background:var(--code);padding:1px 5px;border-radius:4px}
+pre{background:var(--code);padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:13px;line-height:1.55}
+pre code{background:none;padding:0}
+.badge{display:inline-block;font-size:12px;padding:1px 8px;border-radius:999px;white-space:nowrap}
+.b-ok{background:var(--ok-soft);color:var(--ok)}
+.b-warn{background:var(--warn-soft);color:var(--warn)}
+.b-acc{background:var(--accent-soft);color:var(--accent)}
+.screen{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:4px 20px 16px;margin:16px 0}
+.screen h3{display:flex;align-items:center;gap:10px}
+.sid{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:8px;background:var(--accent);color:var(--surface);font-size:14px;font-weight:700}
+ul.ac{list-style:none;padding-left:0}
+ul.ac li{padding-left:26px;position:relative;margin:4px 0}
+ul.ac li::before{content:"";position:absolute;left:4px;top:7px;width:12px;height:12px;border:1.5px solid var(--muted);border-radius:3px}
+.note{background:var(--warn-soft);border-left:3px solid var(--warn);padding:10px 14px;border-radius:0;margin:12px 0;font-size:14px}
+.info{background:var(--accent-soft);border-left:3px solid var(--accent);padding:10px 14px;border-radius:0;margin:12px 0;font-size:14px}
+.tree td:first-child{white-space:nowrap}
+.l1{font-weight:700}
+.l2{padding-left:22px!important}
+.l3{padding-left:44px!important;color:var(--muted)}
+.l3 b{color:var(--text);font-weight:500}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+<p class="meta">Spec-Driven Development · 짝 문서: <a href="design.html">design.html</a></p>
+<h1>커피콩책(가제) — Specification</h1>
+<p class="meta">버전 1.1 · 2026-11-17 · 작성: 태우 · 상태: <b>확정</b> · 짝 문서: design.html, implementation-plan.md, test-plan.md</p>
+<p class="meta">v1.1 변경: 외부 리뷰 반영 — Cloud Functions(재귀 삭제·계정 전환 정리·Apple 서버 알림), 노트 전체 구독, 저장·동기화 상태, 시트 스와이프 확인, 보안 규칙 값 검증, 태그 마이그레이션 절차, "내 점수", Liquid Glass 대응, 태그 이름 수정 · v1.0 모든 결정 확정 · v0.3 장비·블렌드 · v0.2 HIG</p>
+</header>
+
+<nav class="toc">
+<ol>
+<li><a href="#overview">개요</a></li>
+<li><a href="#decisions">결정 로그</a></li>
+<li><a href="#scope">범위</a></li>
+<li><a href="#arch">기술 스택과 아키텍처</a></li>
+<li><a href="#model">도메인 모델</a></li>
+<li><a href="#rules">비즈니스 규칙</a></li>
+<li><a href="#firestore">Firestore 구조</a></li>
+<li><a href="#screens">화면 명세 A–L</a></li>
+<li><a href="#nfr">비기능 요구사항</a></li>
+<li><a href="#taxonomy">부록: 플레이버 태그 체계</a></li>
+<li><a href="#release">출시 체크리스트</a></li>
+<li><a href="#open">남은 질문 (v1 이후)</a></li>
+</ol>
+</nav>
+
+<!-- 1 -->
+<h2 id="overview">1. 개요</h2>
+<p><b>한 줄 정의</b> — 커피를 마신 뒤 원두 정보, 추출 레시피, 오각형 맛 프로필, 플레이버 태그, 후기와 점수를 남기는 iOS 테이스팅 노트 앱.</p>
+<h4>목적</h4>
+<ul>
+<li>종이 테이스팅 노트를 대체하면서, 종이로는 어려운 <b>같은 원두의 시간에 따른 변화(D+N)</b>와 <b>레시피 재사용</b>을 지원한다.</li>
+<li>컵 노트를 표준화된 플레이버 태그로 쌓아, 이후 커뮤니티 기능에서 누구나 이해할 수 있는 정보로 공유할 기반을 만든다.</li>
+<li>신입 iOS 포트폴리오: SwiftUI + MVVM, Firebase, 직접 그린 오각형 차트, 1:N 데이터 모델 설계를 보여준다.</li>
+</ul>
+<h4>주요 사용자</h4>
+<p>홈카페에서 핸드드립·에스프레소를 즐기며 원두별 기록을 남기고 싶은 사람. 1차 사용자는 개발자 본인.</p>
+
+<!-- 2 -->
+<h2 id="decisions">2. 결정 로그</h2>
+<p>v1.0 기준으로 모든 항목이 <span class="badge b-ok">확정</span>이다. 구현 중 바꿔야 하면 이 표를 먼저 고치고 버전을 올린다. 출시까지의 할 일은 11장, v1 이후 질문은 12장에 있다.</p>
+<h3>제품</h3>
+<div class="tbl"><table>
+<tr><th style="width:44px">#</th><th style="width:150px">항목</th><th>결정</th></tr>
+<tr><td>D1</td><td>v1 범위</td><td>Must have 1~8 전부 (노트 작성, 오각형, D+N, 레시피, 목록·검색, 원두 1:N 노트, 이전 레시피 불러오기, 플레이버 태그) + 내 장비</td></tr>
+<tr><td>D11</td><td>앱 이름</td><td>가제 <b>"커피콩책"</b>. 출시 전까지 바뀔 수 있으므로 코드에서는 이름을 한 곳(<code>AppInfo.displayName</code>, Info.plist <code>CFBundleDisplayName</code>)에서만 참조</td></tr>
+<tr><td>D22</td><td>지원 언어</td><td>v1은 한국어만. 모든 UI 문자열은 처음부터 String Catalog(<code>Localizable.xcstrings</code>)로 분리</td></tr>
+</table></div>
+<h3>노트와 맛 기록</h3>
+<div class="tbl"><table>
+<tr><th style="width:44px">#</th><th style="width:150px">항목</th><th>결정</th></tr>
+<tr><td>D4</td><td>맛 그래프</td><td>오각형 5축: 아로마 · 산미 · 단맛 · 후미 · 바디 (12시부터 시계 방향)</td></tr>
+<tr><td>D5</td><td>축 척도</td><td>1~5 정수</td></tr>
+<tr><td>D16</td><td>오각형 입력</td><td>차트 아래 축별 1~5 세그먼트(터치 영역 44×44pt 이상), 차트는 실시간 반영, 꼭짓점 드래그 없음. 선택 입력이며 처음 켜면 모든 축 3</td></tr>
+<tr><td>D6</td><td>내 점수</td><td>100점 만점, 0.25 단위의 <b>개인 점수</b>. 화면 이름은 "내 점수". SCA 평가 방식이라고 표현하지 않음(SCA의 현행 CVA는 단일 점수가 아닌 네 가지 평가의 조합). SCA 언급은 플레이버 태그 출처(D33)에만 (v1.1 변경)</td></tr>
+<tr><td>D17</td><td>점수 입력</td><td>정수 휠(0~100) + 소수 세그먼트(.00/.25/.50/.75). 선택 입력, 처음 켜면 80.00</td></tr>
+<tr><td>D18</td><td>재구매 의향</td><td>O / △ / X, 선택 입력</td></tr>
+<tr><td>D12</td><td>프레그런스</td><td>컵 노트와 <b>같은 플레이버 태그 체계에서 따로 선택</b>(<code>fragranceTagIds</code>). 향(가루)과 맛(컵)을 비교할 수 있게 함 (v1.0 변경)</td></tr>
+</table></div>
+<h3>플레이버 태그</h3>
+<div class="tbl"><table>
+<tr><th style="width:44px">#</th><th style="width:150px">항목</th><th>결정</th></tr>
+<tr><td>D7</td><td>태그 체계</td><td>SCA·WCR 플레이버휠을 참고한 <b>자체 한국어 분류</b>(부록, <code>flavor_taxonomy.json</code> 110개 노드). 각 태그에 영문 표준 용어(<code>refTerm</code>)를 매핑. 휠 자체의 구조·디자인·번역은 쓰지 않음</td></tr>
+<tr><td>D33</td><td>SCA 문의</td><td>문의하지 않고 진행. 앱 안 안내 문구는 "참고해 자체 구성"으로 표기하고 SCA 로고·휠 이미지는 쓰지 않음</td></tr>
+<tr><td>D8</td><td>선택 깊이</td><td>1·2·3단계 어느 노드든 선택 가능</td></tr>
+<tr><td>D13</td><td>사용자 정의 태그</td><td>만들 수 없음. 체계에 없는 향미는 "향미 메모" 텍스트에 기록</td></tr>
+<tr><td>D14</td><td>태그 개수</td><td>프레그런스 태그, 컵 노트 태그 각각 최대 10개</td></tr>
+<tr><td>D15</td><td>상하위 동시 선택</td><td>하위를 고르면 그 조상은 자동 해제, 조상을 고르면 그 자손은 자동 해제(각 목록 안에서)</td></tr>
+<tr><td>D43</td><td>태그 목록 수정</td><td>출시 전이므로 ID까지 수정(v1.1): <code>roast.grain.grain</code> 삭제(상위 "곡물"과 중복), <code>fruit.orchard</code>를 <code>fruit.pome</code>("사과·배")와 <code>fruit.grape</code>("포도", 하위 "청포도")로 분리, <code>defect.sour</code> 이름 "과한 신맛", <code>sweet.caramel</code>의 refTerm은 Caramelized 유지. 첫 출시 이후에는 ID를 바꾸지 않음</td></tr>
+<tr><td>D34</td><td>상위 태그 필터</td><td>"베리"로 필터하면 "블루베리" 노트도 나옴. 노트 저장 시 두 태그 목록과 각 조상 ID를 합친 <code>tagIndex</code>를 함께 저장해 <code>array-contains</code> 쿼리 (v1.0, Q3 해결)</td></tr>
+</table></div>
+<h3>원두·레시피·장비</h3>
+<div class="tbl"><table>
+<tr><th style="width:44px">#</th><th style="width:150px">항목</th><th>결정</th></tr>
+<tr><td>D27</td><td>장비</td><td>드리퍼(추출 기구)·그라인더를 내 장비로 등록하고 레시피에서 선택. 추출 방식은 별도 항목. 분쇄도 단위는 그라인더 설정을 따름</td></tr>
+<tr><td>D31</td><td>장비 삭제</td><td>레시피에 장비 ID와 이름 스냅샷을 함께 저장. 장비를 삭제해도 과거 노트에는 이름이 남음</td></tr>
+<tr><td>D35</td><td>아이스/핫</td><td>레시피에 온도 구분 <code>serving: hot | iced</code>(선택)만 기록. 얼음량은 기록하지 않음 (v1.0, Q4 해결)</td></tr>
+<tr><td>D28</td><td>원두 용량</td><td>구매 용량(g)은 선택 입력 정보. 남은 양은 계산하지 않고, 다 마셨는지는 사용자가 직접 표시</td></tr>
+<tr><td>D30</td><td>블렌드</td><td>원두에 구성 원두 목록(국가·지역·품종·가공방식·비율). 싱글 오리진은 구성 1개</td></tr>
+<tr><td>D32</td><td>블렌드 규칙</td><td>구성 최대 5개. 구성이 2개 이상이면 "<b>비율 모름</b>" 토글 제공(기본 꺼짐). 꺼져 있으면 모든 구성에 비율이 있어야 하고 합이 100%, 켜져 있으면 비율을 저장하지 않음 (v1.0 변경)</td></tr>
+</table></div>
+<h3>계정</h3>
+<div class="tbl"><table>
+<tr><th style="width:44px">#</th><th style="width:150px">항목</th><th>결정</th></tr>
+<tr><td>D3</td><td>로그인</td><td>Firebase 익명 계정으로 바로 시작, Sign in with Apple로 보관. 로그인 수단은 Apple 하나</td></tr>
+<tr><td>D29</td><td>Apple 버튼</td><td>"Apple로 계속하기" 하나로 연결·불러오기 통합(R7)</td></tr>
+<tr><td>D24</td><td>계정 충돌</td><td>병합하지 않음. 이 기기에 노트가 있으면 "Apple 계정의 기록 불러오기(이 기기 기록 삭제)" / 취소 선택, 없으면 묻지 않고 전환. <b>익명 기록은 Apple 계정 전환이 성공한 뒤에만 지운다</b>(R7 전환 절차) (v1.1)</td></tr>
+<tr><td>D25</td><td>보관 안내</td><td>익명 사용자에게 B 상단 안내 카드를 <b>첫 노트 저장 후</b>, 그리고 <b>노트 10개째 저장 후</b> 한 번 더 표시(각각 닫으면 다시 안 나옴). J에는 상시 표시 (v1.0, Q7 해결)</td></tr>
+<tr><td>D21</td><td>계정·데이터 삭제</td><td>확인 후 즉시 삭제. 삭제 대상은 <code>beans</code>, <code>notes</code>, <code>gear</code> 하위 컬렉션 전체와 사용자 문서, Auth 계정. Firestore는 상위 문서를 지워도 하위 컬렉션을 지우지 않으므로 <b>Cloud Function이 재귀 삭제</b>한다(R10). 익명 사용자는 "모든 데이터 삭제" (v1.1 변경)</td></tr>
+</table></div>
+<h3>기술</h3>
+<div class="tbl"><table>
+<tr><th style="width:44px">#</th><th style="width:150px">항목</th><th>결정</th></tr>
+<tr><td>D2</td><td>백엔드</td><td>Firebase (Auth + Cloud Firestore + <b>Cloud Functions</b>). Cloud Functions 때문에 Blaze(종량제) 요금제 필요 (v1.1 변경)</td></tr>
+<tr><td>D10</td><td>아키텍처</td><td>SwiftUI + MVVM(<code>@Observable</code>), iOS 17+</td></tr>
+<tr><td>D19</td><td>날짜</td><td><code>DateOnly</code> 타입, Firestore에는 <code>"yyyy-MM-dd"</code> 문자열</td></tr>
+<tr><td>D20</td><td>데이터 로딩·검색</td><td><b>노트·원두·장비 컬렉션 전체를 실시간 구독</b>(페이지네이션 없음). 정렬·텍스트 검색·태그 필터를 모두 기기의 전체 데이터로 처리하므로 온라인·오프라인 결과가 같다. 목록은 <code>List</code>의 지연 렌더링으로 그린다 (v1.1 변경)</td></tr>
+<tr><td>D38</td><td>저장·동기화 상태</td><td>저장 완료와 서버 동기화 완료를 구분(R9). 목록 위 "동기화 대기 N개" 배너 + 해당 노트 행·상세에 구름 아이콘. 오프라인 저장은 "기기에 저장됨"으로 표현 (v1.1)</td></tr>
+<tr><td>D39</td><td>점수 저장</td><td>점수가 없으면 <code>score</code> 필드를 <b>명시적 null</b>로 저장. 점수순 동점은 마신 날 → 작성 시각 내림차순(R4) (v1.1)</td></tr>
+<tr><td>D26</td><td>화면 전환</td><td>노트 작성은 시트 하나, 원두·태그·장비 선택은 그 안에서 push</td></tr>
+<tr><td>D40</td><td>시트 스와이프 닫기</td><td>변경 사항이 있으면 <code>.interactiveDismissDisabled(true)</code>로 막고, UIKit <code>UIAdaptivePresentationControllerDelegate.presentationControllerDidAttemptToDismiss</code>로 <b>스와이프 시도를 감지</b>해 "변경 사항 버리기" 확인 메뉴를 띄움(메일·메모 앱과 같은 동작). 시트를 띄우는 곳마다 같은 래퍼(<code>DiscardGuardedSheet</code>)를 씀 (v1.1)</td></tr>
+<tr><td>D41</td><td>최신 iOS 외관</td><td>Xcode 26 / iOS 26 SDK로 빌드(2026-04-28부터 App Store 제출 요건), 최소 지원은 iOS 17 유지. 탭 바·툴바·시트 배경은 직접 칠하지 않고 시스템 외관(iOS 26의 Liquid Glass 포함)을 그대로 씀. 크림 배경은 콘텐츠 영역에만 (v1.1)</td></tr>
+<tr><td>D42</td><td>Apple 서버 알림</td><td>Sign in with Apple 서버 간 알림 엔드포인트를 v1에 구현(Cloud Functions HTTPS). 대한민국 기반 개발자 요건이자 Apple 권장 사항. <code>consent-revoked</code>·<code>account-deleted</code> 수신 시 해당 사용자 데이터·계정 삭제(R10) (v1.1)</td></tr>
+<tr><td>D36</td><td>진단 데이터</td><td>Firebase <b>Crashlytics만</b> 사용. Analytics는 쓰지 않음 (v1.0)</td></tr>
+<tr><td>D9</td><td>문서 구조</td><td>화면 중심(A–L), spec과 design이 같은 화면 ID 공유</td></tr>
+<tr><td>D23</td><td>UI 기준</td><td>Apple HIG 준수. 검토 표는 design.html 1장</td></tr>
+</table></div>
+<h3>출시</h3>
+<div class="tbl"><table>
+<tr><th style="width:44px">#</th><th style="width:150px">항목</th><th>결정</th></tr>
+<tr><td>D37</td><td>개인정보처리방침</td><td>GitHub Pages에 게시, J와 App Store Connect에 같은 URL (v1.0)</td></tr>
+</table></div>
+
+<!-- 3 -->
+<h2 id="scope">3. 범위</h2>
+<h3>v1.0 포함</h3>
+<div class="tbl"><table>
+<tr><th style="width:44px">#</th><th style="width:170px">기능</th><th>설명</th><th style="width:90px">화면</th></tr>
+<tr><td>F1</td><td>노트 작성·편집·삭제</td><td>원두, 마신 날, 프레그런스 태그, 컵 노트 태그, 향미 메모, 후기, 점수, 재구매 의향</td><td>C, D</td></tr>
+<tr><td>F2</td><td>오각형 맛 프로필</td><td>5축 1~5점 입력과 표시</td><td>B, C, D, I</td></tr>
+<tr><td>F3</td><td>D+N 자동 계산</td><td>원두 로스팅일과 마신 날로 숙성일수 표시</td><td>B, C, D, I</td></tr>
+<tr><td>F4</td><td>추출 레시피</td><td>추출 방식, 핫/아이스, 드리퍼·그라인더(내 장비), 분쇄도, 원두량, 물량, 물 온도, 추출 시간, 비율 자동 계산</td><td>C, D, K</td></tr>
+<tr><td>F5</td><td>목록·정렬·검색</td><td>최신순/점수순, 텍스트 검색, 태그 필터</td><td>B, H</td></tr>
+<tr><td>F6</td><td>원두 1:N 노트</td><td>원두를 한 번 등록하고 여러 잔의 노트를 연결. 블렌드 구성, 구매 용량, 다 마심 표시</td><td>E, F, H, I</td></tr>
+<tr><td>F7</td><td>이전 레시피 불러오기</td><td>같은 원두의 최근 레시피로 새 노트 자동 채움</td><td>D</td></tr>
+<tr><td>F8</td><td>플레이버 태그</td><td>자체 분류 체계에서 프레그런스·컵 노트를 각각 계층 선택, 상위 태그 필터</td><td>D, G, C</td></tr>
+<tr><td>F9</td><td>계정</td><td>익명으로 바로 시작, "Apple로 계속하기"(연결·불러오기 통합), 로그아웃, 데이터·계정 삭제</td><td>A, B, J</td></tr>
+<tr><td>F10</td><td>내 장비</td><td>드리퍼(추출 기구)·그라인더 등록, 편집, 삭제</td><td>J, K, L</td></tr>
+</table></div>
+<h3>v1.0 제외 (이후 버전 후보)</h3>
+<ul>
+<li>원두 봉투·컵 사진 첨부, OCR로 원두 정보 입력</li>
+<li>두 노트의 오각형 겹쳐 비교</li>
+<li>통계 (산지·가공방식별 평균 점수 등)</li>
+<li>커뮤니티 / 노트 공유 카드 이미지</li>
+<li>위젯, iPad 전용 레이아웃, 영어 지원</li>
+<li>사용자 정의 태그, 오각형 축 커스터마이징</li>
+<li>Firebase Analytics, 데이터 내보내기, 익명·Apple 계정 기록 병합</li>
+</ul>
+
+<!-- 4 -->
+<h2 id="arch">4. 기술 스택과 아키텍처</h2>
+<div class="tbl"><table>
+<tr><th style="width:170px">영역</th><th>선택</th></tr>
+<tr><td>최소 버전 / SDK</td><td>iOS 17.0, iPhone 전용(세로). Xcode 26 + iOS 26 SDK로 빌드(D41)</td></tr>
+<tr><td>UI</td><td>SwiftUI, <code>NavigationStack</code>, <code>TabView</code></td></tr>
+<tr><td>상태 관리</td><td>MVVM, <code>@Observable</code> + <code>@MainActor</code> ViewModel</td></tr>
+<tr><td>인증</td><td>Firebase Auth 익명 로그인 → Sign in with Apple(<code>AuthenticationServices</code>) 자격 증명을 익명 계정에 link. uid가 그대로 유지되므로 데이터 이동이 필요 없음</td></tr>
+<tr><td>UI 기준</td><td>Apple HIG. 시스템 컴포넌트(<code>Form</code>, <code>List</code>, <code>Menu</code>, <code>Picker</code>, <code>.searchable</code>, <code>.confirmationDialog</code>, <code>.swipeActions</code>, <code>.contextMenu</code>, <code>SignInWithAppleButton</code>)를 우선 사용하고, 직접 만드는 컴포넌트는 오각형·태그 칩·세그먼트 입력으로 한정</td></tr>
+<tr><td>데이터</td><td>Cloud Firestore (오프라인 영구 캐시 사용), <code>Codable</code> 매핑, 컬렉션 전체 스냅샷 리스너(<code>includeMetadataChanges: true</code>, R9)</td></tr>
+<tr><td>서버</td><td>Cloud Functions for Firebase (2nd gen, TypeScript, 리전 <code>asia-northeast3</code>): <code>deleteAccount</code>, <code>prepareAnonymousCleanup</code>, <code>cleanupAnonymous</code>, <code>appleServerNotifications</code>(7장)</td></tr>
+<tr><td>차트</td><td>오각형은 SwiftUI <code>Path</code>/<code>Shape</code>로 직접 구현 (Swift Charts는 레이더 차트 미지원)</td></tr>
+<tr><td>태그 데이터</td><td>앱 번들 <code>flavor_taxonomy.json</code> (서버에 저장하지 않음)</td></tr>
+<tr><td>진단</td><td>Firebase Crashlytics (충돌 리포트만, Analytics 미사용)</td></tr>
+<tr><td>문자열</td><td>String Catalog (<code>Localizable.xcstrings</code>), v1은 한국어만</td></tr>
+<tr><td>테스트</td><td>XCTest / Swift Testing — 규칙(<code>NoteRule</code>), D+N, 레시피 불러오기, ViewModel(모의 Repository)</td></tr>
+</table></div>
+<h3>레이어</h3>
+<pre><code>View (SwiftUI)
+  └─ ViewModel (@Observable, @MainActor)
+       └─ Repository 프로토콜   ← 테스트에서는 Mock으로 교체
+            ├─ AuthService        (FirebaseAuthService)
+            ├─ FunctionsService   (FirebaseFunctionsService)  ← 삭제·전환 정리 호출
+            ├─ BeanRepository     (FirestoreBeanRepository)
+            ├─ NoteRepository     (FirestoreNoteRepository)
+            └─ GearRepository     (FirestoreGearRepository)
+Domain: Bean, Origin, Note, Recipe, Gear, FlavorProfile, Rebuy, DateOnly, FlavorNode, NoteRule, BeanRule
+Resources: FlavorTaxonomy (번들 JSON 로드, 메모리 캐시)
+functions/ (Cloud Functions, TypeScript) — 앱 저장소의 별도 폴더</code></pre>
+<h3>폴더 구조</h3>
+<pre><code>CoffeeNote/
+  App/            CoffeeNoteApp.swift, AppRouter.swift, AppDependencies.swift
+  Domain/         Models/, Rules/NoteRule.swift, DateOnly.swift
+  Data/           Firebase/, Repositories/
+  Features/
+    Auth/         A_SignInView, SignInViewModel
+    Notes/        B_NoteListView, C_NoteDetailView, D_NoteEditorView (+ViewModels)
+    Beans/        E_BeanPickerSheet, F_BeanEditorView, H_BeanListView, I_BeanDetailView
+    Flavor/       G_FlavorPickerSheet, FlavorTaxonomy.swift
+    Settings/     J_SettingsView
+    Gear/         K_GearListView, L_GearEditorView (+ViewModels)
+  DesignSystem/   PentagonChart, ScoreBadge, DPlusBadge, FlavorTagChip, Theme
+  Resources/      flavor_taxonomy.json, Localizable.xcstrings
+CoffeeNoteTests/</code></pre>
+
+<!-- 5 -->
+<h2 id="model">5. 도메인 모델</h2>
+
+<h3>Bean (원두)</h3>
+<div class="tbl"><table>
+<tr><th>필드</th><th>타입</th><th>필수</th><th>설명</th></tr>
+<tr><td><code>id</code></td><td>String</td><td>✓</td><td>Firestore 문서 ID</td></tr>
+<tr><td><code>name</code></td><td>String</td><td>✓</td><td>원두 이름. 1~60자</td></tr>
+<tr><td><code>roastery</code></td><td>String</td><td>✓</td><td>로스터리. 1~40자</td></tr>
+<tr><td><code>origins</code></td><td>[Origin]</td><td>✓</td><td>구성 원두 0~5개, 기본 []. 싱글 오리진은 1개, 블렌드는 2개 이상</td></tr>
+<tr><td><code>isBlend</code> (계산)</td><td>—</td><td></td><td><code>origins.count &gt;= 2</code>. 저장하지 않음</td></tr>
+<tr><td><code>blendRatioUnknown</code></td><td>Bool</td><td>✓</td><td>블렌드 비율을 모름(D32). 기본 false. true면 모든 구성의 <code>ratioPercent</code>는 nil. 싱글 오리진에서는 항상 false</td></tr>
+<tr><td><code>bagWeightGrams</code></td><td>Int?</td><td></td><td>구매 용량 1~5000g. 정보용, 남은 양 계산에 쓰지 않음</td></tr>
+<tr><td><code>roastLevel</code></td><td>RoastLevel?</td><td></td><td><code>light | mediumLight | medium | mediumDark | dark</code></td></tr>
+<tr><td><code>roastDate</code></td><td>DateOnly?</td><td></td><td>로스팅일. 없으면 D+N 미표시</td></tr>
+<tr><td><code>roasteryNotes</code></td><td>String?</td><td></td><td>로스터리가 적은 컵 노트 (자유 텍스트, 0~200자)</td></tr>
+<tr><td><code>isFinished</code></td><td>Bool</td><td>✓</td><td>다 마신 원두. 기본 false. 원두 선택 시트에서 아래로 정렬</td></tr>
+<tr><td><code>createdAt / updatedAt</code></td><td>Timestamp</td><td>✓</td><td>서버 타임스탬프</td></tr>
+</table></div>
+
+<h3>Origin (구성 원두, 값 타입)</h3>
+<div class="tbl"><table>
+<tr><th>필드</th><th>타입</th><th>설명</th></tr>
+<tr><td><code>country</code></td><td>String?</td><td>국가</td></tr>
+<tr><td><code>region</code></td><td>String?</td><td>지역·농장·생산자 (자유 입력)</td></tr>
+<tr><td><code>variety</code></td><td>String?</td><td>품종</td></tr>
+<tr><td><code>process</code></td><td>Process?</td><td><code>washed | natural | honey | anaerobic | other</code></td></tr>
+<tr><td><code>ratioPercent</code></td><td>Int?</td><td>블렌드 비율 1~100. 블렌드이고 <code>blendRatioUnknown == false</code>이면 필수. 싱글 오리진에서는 nil</td></tr>
+</table></div>
+<p class="meta">표시 규칙: 싱글 오리진 "에티오피아 · 워시드", 블렌드 "블렌드 · 에티오피아 60% / 브라질 40%"(비율 모름이면 "블렌드 · 에티오피아, 브라질"). 목록에서는 구성 2개까지 보이고 나머지는 "+N".</p>
+
+<h3>Gear (내 장비)</h3>
+<div class="tbl"><table>
+<tr><th>필드</th><th>타입</th><th>필수</th><th>설명</th></tr>
+<tr><td><code>id</code></td><td>String</td><td>✓</td><td>Firestore 문서 ID</td></tr>
+<tr><td><code>kind</code></td><td>GearKind</td><td>✓</td><td><code>brewer</code>(드리퍼·추출 기구) | <code>grinder</code>(그라인더)</td></tr>
+<tr><td><code>name</code></td><td>String</td><td>✓</td><td>1~40자. 예: "하리오 V60 02 세라믹", "코만단테 C40"</td></tr>
+<tr><td><code>grindUnit</code></td><td>String?</td><td></td><td>그라인더 전용. 분쇄도 단위 (예: "클릭", "단계"). 레시피 분쇄도 입력란 뒤에 붙음</td></tr>
+<tr><td><code>memo</code></td><td>String?</td><td></td><td>0~100자</td></tr>
+<tr><td><code>createdAt / updatedAt</code></td><td>Timestamp</td><td>✓</td><td>서버 타임스탬프</td></tr>
+</table></div>
+
+<h3>Note (테이스팅 노트)</h3>
+<div class="tbl"><table>
+<tr><th>필드</th><th>타입</th><th>필수</th><th>설명</th></tr>
+<tr><td><code>id</code></td><td>String</td><td>✓</td><td>Firestore 문서 ID</td></tr>
+<tr><td><code>beanId</code></td><td>String</td><td>✓</td><td>연결된 원두</td></tr>
+<tr><td><code>drankOn</code></td><td>DateOnly</td><td>✓</td><td>마신 날. 기본값 오늘</td></tr>
+<tr><td><code>recipe</code></td><td>Recipe?</td><td></td><td>추출 레시피</td></tr>
+<tr><td><code>profile</code></td><td>FlavorProfile?</td><td></td><td>오각형 값. 입력하지 않으면 nil</td></tr>
+<tr><td><code>fragranceTagIds</code></td><td>[String]</td><td>✓</td><td>프레그런스(분쇄 원두 향) 태그 ID, 0~10개, 기본 []</td></tr>
+<tr><td><code>cupTagIds</code></td><td>[String]</td><td>✓</td><td>컵 노트(마셨을 때 향미) 태그 ID, 0~10개, 기본 []</td></tr>
+<tr><td><code>tagIndex</code></td><td>[String]</td><td>✓</td><td>필터용 파생 필드(D34). <code>fragranceTagIds ∪ cupTagIds</code>와 그 모든 조상 ID의 중복 없는 합. 저장할 때마다 Repository가 다시 계산하며 UI에서 직접 쓰지 않음</td></tr>
+<tr><td><code>flavorMemo</code></td><td>String?</td><td></td><td>향미 메모: 태그로 표현하지 못한 향과 맛, 0~200자</td></tr>
+<tr><td><code>review</code></td><td>String?</td><td></td><td>후기, 0~1000자</td></tr>
+<tr><td><code>score</code></td><td>Double?</td><td>✓(null 허용)</td><td>내 점수 0.00~100.00, 0.25 단위. 없으면 필드를 생략하지 않고 <b>null</b>로 저장(D39)</td></tr>
+<tr><td><code>rebuy</code></td><td>Rebuy?</td><td></td><td><code>yes | maybe | no</code> (O / △ / X)</td></tr>
+<tr><td><code>createdAt / updatedAt</code></td><td>Timestamp</td><td>✓</td><td>서버 타임스탬프</td></tr>
+</table></div>
+
+<h3>Recipe (값 타입)</h3>
+<div class="tbl"><table>
+<tr><th>필드</th><th>타입</th><th>범위</th><th>설명</th></tr>
+<tr><td><code>method</code></td><td>BrewMethod?</td><td></td><td>추출 방식: <code>pourOver | espresso | aeropress | immersion | coldBrew | other</code> (핸드드립 / 에스프레소 / 에어로프레스 / 침출식(프렌치프레스 등) / 콜드브루 / 기타)</td></tr>
+<tr><td><code>serving</code></td><td>Serving?</td><td></td><td><code>hot | iced</code> (D35). 선택 입력</td></tr>
+<tr><td><code>brewerId</code>, <code>brewerName</code></td><td>String?</td><td></td><td>선택한 드리퍼(추출 기구) ID와 저장 시점 이름 스냅샷(D31)</td></tr>
+<tr><td><code>grinderId</code>, <code>grinderName</code></td><td>String?</td><td></td><td>선택한 그라인더 ID와 이름 스냅샷</td></tr>
+<tr><td><code>doseGrams</code></td><td>Double?</td><td>0.1~100.0</td><td>원두량, 0.1g 단위</td></tr>
+<tr><td><code>waterGrams</code></td><td>Int?</td><td>1~2000</td><td>물량(에스프레소는 추출량)</td></tr>
+<tr><td><code>waterTempC</code></td><td>Int?</td><td>0~100</td><td>물 온도(℃). 아이스여도 추출 물 온도</td></tr>
+<tr><td><code>grindSetting</code></td><td>String?</td><td>0~20자</td><td>분쇄도 값 (예: "22"). 화면에는 그라인더의 <code>grindUnit</code>과 함께 "22클릭"으로 표시. 그라인더 없이도 입력 가능</td></tr>
+<tr><td><code>brewTimeSeconds</code></td><td>Int?</td><td>1~86400</td><td>추출 시간. 화면은 m:ss</td></tr>
+<tr><td><code>ratio</code> (계산)</td><td>—</td><td></td><td><code>waterGrams / doseGrams</code>, 둘 다 있을 때 "1:16.0"으로 표시. 저장하지 않음</td></tr>
+</table></div>
+
+<h3>FlavorProfile (값 타입)</h3>
+<pre><code>struct FlavorProfile: Codable, Equatable {
+    var aroma: Int       // 아로마 1...5
+    var acidity: Int     // 산미   1...5
+    var sweetness: Int   // 단맛   1...5
+    var aftertaste: Int  // 후미   1...5
+    var body: Int        // 바디   1...5
+
+    enum Axis: CaseIterable { case aroma, acidity, sweetness, aftertaste, body }
+    // CaseIterable 순서 = 오각형 꼭짓점 순서 (12시부터 시계 방향)
+    static let initial = FlavorProfile(aroma: 3, acidity: 3, sweetness: 3, aftertaste: 3, body: 3)
+}</code></pre>
+
+<h3>SyncState (저장·동기화 상태, 저장하지 않음)</h3>
+<pre><code>enum SaveState { case idle, saving, savedLocally, synced, failed(Error) }   // 편집 화면의 저장 버튼 단위
+enum SyncState { case synced, pending }                                     // 문서 단위, snapshot.metadata.hasPendingWrites로 계산</code></pre>
+<p class="meta">전이 규칙은 R9.</p>
+
+<h3>FlavorNode (번들 태그 데이터)</h3>
+<pre><code>struct FlavorNode: Codable, Identifiable {
+    let id: String          // "fruit.berry.blueberry" — 영구 불변
+    let parentId: String?   // 최상위는 nil
+    let level: Int          // 1, 2, 3
+    let nameKo: String      // "블루베리"
+    let refTerm: String?    // "Blueberry" — 표준 영문 용어. 대응 용어가 없으면 nil
+    let group: FlavorGroup  // 최상위 계열 (색상 결정)
+    let deprecated: Bool?   // true면 선택 목록·검색에서 숨김. 기존 노트에는 계속 표시 (v1.1)
+
+    var isSelectable: Bool { deprecated != true }
+}</code></pre>
+<p class="meta"><code>FlavorTaxonomy</code>는 로드할 때 형식을 검증한다: id 중복 없음, parentId 존재, 부모 level = 자식 level − 1, 부모와 group 같음, 부모·자식 이름 중복 없음. 검증 실패는 디버그 빌드에서 <code>assertionFailure</code>, 테스트(test-plan TST-T01~T05)로도 확인한다. 같은 규칙을 <code>flavor_taxonomy.schema.json</code>(JSON Schema)로도 제공한다.</p>
+<div class="info">태그 ID는 한 번 배포하면 바꾸지 않는다. 이름을 고칠 때는 <code>nameKo</code>만 바꾸고, 태그를 없앨 때는 JSON에 <code>deprecated: true</code>를 붙여 선택 목록에서만 숨긴다(기존 노트에는 계속 표시).</div>
+
+<!-- 6 -->
+<h2 id="rules">6. 비즈니스 규칙</h2>
+
+<h3>R1. D+N 계산</h3>
+<ul>
+<li><code>N = drankOn − bean.roastDate</code> (일 단위, <code>DateOnly</code> 간 차이). 로스팅 당일은 D+0.</li>
+<li><code>roastDate</code>가 nil이면 D+N 배지를 표시하지 않는다.</li>
+<li>표시 형식: <code>D+14</code>. N이 음수인 노트는 저장할 수 없다(R3 참고).</li>
+<li>원두의 로스팅일을 나중에 고치면, 그 원두의 모든 노트 D+N은 화면에서 다시 계산된다(저장하지 않는 값).</li>
+</ul>
+
+<h3>R2. 이전 레시피 불러오기</h3>
+<ul>
+<li><b>새 노트</b>에서 원두를 선택하면, 같은 <code>beanId</code>의 노트 중 <code>drankOn</code> 내림차순, 같으면 <code>createdAt</code> 내림차순으로 첫 노트의 <code>recipe</code>를 복사한다.</li>
+<li>복사 대상은 레시피(추출 방식, 핫/아이스, 장비, 분쇄도, 수치)만이다. 오각형·태그·점수·후기는 복사하지 않는다.</li>
+<li>복사한 레시피의 장비가 이미 삭제됐으면 그 장비 칸은 비우고 나머지만 채운다.</li>
+<li>같은 원두의 노트가 없으면 레시피는 비워 둔다.</li>
+<li>불러오면 레시피 섹션 위에 "11월 10일 레시피를 불러왔어요 · 비우기" 배너를 보여준다. "비우기"를 누르면 레시피 필드를 모두 지운다.</li>
+<li>사용자가 레시피를 직접 수정한 뒤 원두를 다른 것으로 바꾸면, 덮어쓰기 전에 확인 알림을 띄운다.</li>
+<li>편집 모드(기존 노트 수정)에서는 불러오지 않는다.</li>
+</ul>
+
+<h3>R3. 검증 규칙 — <code>NoteRule</code></h3>
+<div class="tbl"><table>
+<tr><th>case</th><th>조건</th><th>메시지</th></tr>
+<tr><td><code>beanRequired</code></td><td>원두 미선택</td><td>원두를 선택해 주세요</td></tr>
+<tr><td><code>drankBeforeRoast</code></td><td><code>drankOn &lt; roastDate</code></td><td>마신 날이 로스팅일보다 빨라요</td></tr>
+<tr><td><code>drankInFuture</code></td><td><code>drankOn &gt; 오늘</code></td><td>오늘 이후 날짜는 선택할 수 없어요</td></tr>
+<tr><td><code>scoreOutOfRange</code></td><td>0 미만 또는 100 초과</td><td>점수는 0~100 사이예요</td></tr>
+<tr><td><code>scoreStep</code></td><td>0.25의 배수가 아님</td><td>점수는 0.25 단위로 입력해 주세요</td></tr>
+<tr><td><code>axisOutOfRange</code></td><td>축 값이 1~5 밖</td><td>(UI에서 발생하지 않음, 디코딩 방어용)</td></tr>
+<tr><td><code>tooManyTags</code></td><td>프레그런스 또는 컵 노트 태그가 10개 초과</td><td>태그는 10개까지 고를 수 있어요</td></tr>
+<tr><td><code>recipeOutOfRange</code></td><td>Recipe 필드가 범위 밖</td><td>필드별 메시지 (예: 물 온도는 0~100℃)</td></tr>
+<tr><td><code>textTooLong</code></td><td>텍스트 길이 초과</td><td>최대 N자까지 쓸 수 있어요</td></tr>
+</table></div>
+<p>원두(<code>BeanRule</code>): <code>nameRequired</code>, <code>roasteryRequired</code>, <code>roastDateInFuture</code>, <code>roastDateAfterExistingNote</code>(이미 있는 노트의 마신 날보다 늦은 로스팅일로 바꿀 수 없음), <code>tooManyOrigins</code>(구성 5개 초과), <code>ratioMissing</code>(블렌드이고 비율 모름이 꺼져 있는데 비율이 빈 구성이 있음 — "비율을 모두 입력하거나 ‘비율 모름’을 켜 주세요"), <code>ratioSumNot100</code>(비율 합이 100이 아님 — "비율 합이 100%가 되어야 해요"), <code>bagWeightOutOfRange</code>.</p>
+<p>장비(<code>GearRule</code>): <code>nameRequired</code>, <code>nameTooLong</code>.</p>
+
+<h3>R4. 점수</h3>
+<ul>
+<li>표시: 항상 소수 둘째 자리까지 (<code>86.25</code>, <code>88.00</code>).</li>
+<li>점수순 정렬: 점수 내림차순 → 동점이면 마신 날 내림차순 → 작성 시각 내림차순. 점수가 null인 노트는 맨 아래, 그 안에서는 최신순(마신 날 → 작성 시각 내림차순).</li>
+<li>정렬은 기기의 전체 노트로 계산한다(D20). Firestore 쿼리에 의존하지 않으므로 별도 인덱스가 없다.</li>
+<li>화면 이름은 항상 "내 점수"(D6).</li>
+</ul>
+
+<h3>R5. 플레이버 태그</h3>
+<ul>
+<li>1·2·3단계 어느 노드든 선택할 수 있다(D8).</li>
+<li>자식 노드를 선택하면 그 조상 노드의 선택은 해제된다. 조상 노드를 선택하면 그 자손 노드의 선택은 해제된다(D15).</li>
+<li>프레그런스 태그와 컵 노트 태그는 서로 독립이다. 같은 태그를 양쪽에 고를 수 있고, 상하위 규칙(D15)과 10개 제한(D14)은 각 목록 안에서만 적용한다.</li>
+<li>노트에 표시할 때는 각 목록을 선택 순서대로 보여준다.</li>
+<li>태그 필터(D34)는 <code>tagIndex array-contains 선택한 ID</code>로 찾는다. "베리"로 필터하면 프레그런스나 컵 노트에 "베리", "블루베리", "라즈베리" 등이 있는 노트가 모두 나온다. "블루베리"로 필터하면 "베리"만 고른 노트는 나오지 않는다.</li>
+<li>taxonomy가 바뀌어 조상 관계가 달라지면 <code>tagIndex</code> 마이그레이션(R11)을 실행한다.</li>
+<li>선택 화면(G)과 태그 검색에는 <code>isSelectable</code>인 노드만 보여준다. deprecated 태그가 붙은 기존 노트는 그대로 표시하고, 편집할 때 사용자가 직접 지우기 전에는 유지한다.</li>
+</ul>
+
+<h3>R6. 삭제와 확인</h3>
+<ul>
+<li>사용자가 직접 고른 파괴적 동작(삭제, 변경 사항 버리기, 계정 삭제)은 alert가 아니라 <b>확인 대화상자(<code>.confirmationDialog</code>, 액션 시트)</b>로 확인한다. 파괴적 버튼은 <code>role: .destructive</code>, 취소 버튼은 시스템 기본 제공.</li>
+<li>노트 삭제: "노트 삭제" 확인 후 삭제, 되돌릴 수 없다.</li>
+<li>원두 삭제: 연결된 노트가 있으면 메시지 "노트 N개도 함께 삭제돼요"와 함께 확인 후 원두와 노트를 배치로 삭제한다.</li>
+<li>예상하지 못한 문제를 알릴 때(저장 실패, 계정 연결 실패)만 alert를 쓴다.</li>
+<li><b>변경 사항이 있는 시트 닫기(D40)</b>: 변경 사항 판단은 시트를 연 시점의 값과 현재 값 비교(<code>Equatable</code>). 변경이 있으면 스와이프는 막히고, 스와이프 시도 또는 "취소" 탭 모두 같은 확인 메뉴("변경 사항 버리기" destructive / "계속 편집")를 띄운다. 변경이 없으면 둘 다 바로 닫힌다. 시트 안에서 E·F·G·K·L로 push했다 돌아와도 입력값은 유지된다(작성 상태는 D의 ViewModel이 소유).</li>
+</ul>
+
+<h3>R7. 계정 상태와 "Apple로 계속하기"</h3>
+<div class="tbl"><table>
+<tr><th style="width:120px">상태</th><th>설명</th><th>J 계정 섹션</th></tr>
+<tr><td>익명</td><td>첫 실행 시 자동 생성. 앱을 지우거나 기기를 바꾸면 기록에 다시 접근할 수 없다</td><td>"Apple로 계속하기", 모든 데이터 삭제</td></tr>
+<tr><td>Apple 연결됨</td><td>Apple 자격 증명과 묶인 계정. 다른 기기에서도 같은 기록</td><td>"Sign in with Apple 사용 중", 로그아웃, 계정 삭제</td></tr>
+</table></div>
+<p>"Apple로 계속하기" 버튼 하나로 처리하고, 앱이 결과에 따라 분기한다. 사용자는 연결과 로그인을 구분할 필요가 없다.</p>
+<div class="tbl"><table>
+<tr><th style="width:44px">#</th><th>Apple 계정 상태</th><th>이 기기(익명) 상태</th><th>처리</th></tr>
+<tr><td>1</td><td>처음 쓰는 Apple 계정</td><td>무관</td><td>익명 계정에 Apple 자격 증명을 <b>link</b>. uid 유지, 기록 그대로</td></tr>
+<tr><td>2</td><td>이미 기록이 있는 Apple 계정</td><td>노트 0개</td><td>묻지 않고 그 Apple 계정으로 <b>sign in</b>. 빈 익명 계정은 삭제</td></tr>
+<tr><td>3</td><td>이미 기록이 있는 Apple 계정</td><td>노트 1개 이상</td><td>확인 대화상자(D24): "Apple 계정의 기록 불러오기"(destructive, 이 기기 기록 삭제) / 취소</td></tr>
+</table></div>
+<ul>
+<li>link 시도 결과가 "자격 증명이 이미 다른 계정에서 사용 중"이면 2·3번으로 분기한다.</li>
+</ul>
+<h4>2·3번 전환 절차 (데이터 보호 순서, v1.1)</h4>
+<p>원칙: <b>Apple 계정으로 전환이 성공하기 전에는 익명 기록을 지우지 않는다.</b> 실패하면 사용자는 익명 계정과 그 기록을 그대로 가진 채 남는다.</p>
+<ol>
+<li>Apple 인증 완료(자격 증명 확보) → link 실패로 2·3번 판정. 3번이면 확인 대화상자, 취소하면 아무것도 바꾸지 않는다.</li>
+<li>익명 상태에서 <code>prepareAnonymousCleanup</code> 호출 → 서버가 정리 티켓(<code>cleanupTickets/{ticketId}</code>: anonUid, 30일 TTL)을 만들고 <code>ticketId</code>를 돌려준다. 앱은 <code>ticketId</code>를 Keychain에 저장한다. 이 단계가 실패하면 전환하지 않고 alert.</li>
+<li>Apple 자격 증명으로 sign in. 실패하면 익명 상태 그대로 유지, Keychain 티켓은 삭제(서버 티켓은 TTL로 자동 만료), alert "불러오지 못했어요. 이 기기 기록은 그대로 있어요."</li>
+<li>성공하면 새 계정으로 화면 갱신 → <code>cleanupAnonymous(ticketId)</code> 호출 → 서버가 anonUid의 데이터를 재귀 삭제하고 익명 Auth 사용자를 삭제, 티켓 삭제.</li>
+<li>4가 실패하면 앱 실행·포그라운드 진입 때마다 Keychain 티켓으로 재시도한다(멱등). 사용자 화면에는 영향이 없다. 30일 안에 성공하지 못하면 Crashlytics 비치명 오류로 기록한다.</li>
+</ol>
+<ul>
+<li>로그아웃하면 새 익명 계정으로 빈 상태에서 시작한다. 로그아웃 전에 확인 대화상자로 이 점을 알린다.</li>
+</ul>
+<h3>R8. 보관 안내 카드 (D25)</h3>
+<ul>
+<li>조건: 익명 상태 + 노트 저장 직후 전체 노트 수가 1개 또는 10개에 도달.</li>
+<li>각 단계(<code>first</code>, <code>tenth</code>)마다 한 번만 표시. 닫으면 그 단계는 다시 표시하지 않음. 상태는 사용자 문서 <code>backupPromptDismissed: [String]</code>에 저장.</li>
+<li>10개째 문구: "노트가 10개 쌓였어요. Apple 계정에 보관해 두면 기기를 바꿔도 남아요."</li>
+<li>Apple 연결 상태에서는 표시하지 않는다.</li>
+</ul>
+
+<h3>R9. 저장·동기화 상태 (D38)</h3>
+<div class="tbl"><table>
+<tr><th>상태</th><th>판단 기준</th><th>화면 표현</th></tr>
+<tr><td><code>saving</code></td><td>저장 버튼을 누른 뒤 로컬 쓰기 완료 전</td><td>저장 버튼 자리 <code>ProgressView</code>, 입력 잠금</td></tr>
+<tr><td><code>savedLocally</code></td><td>로컬 캐시 쓰기 완료(스냅샷 리스너에 문서가 <code>hasPendingWrites == true</code>로 나타남). 온라인이면 보통 1초 안에 synced로 바뀜</td><td>시트를 닫고 진행. 이 문서는 <code>pending</code></td></tr>
+<tr><td><code>synced</code></td><td><code>setData</code> 완료 콜백 성공 또는 리스너에서 <code>hasPendingWrites == false</code></td><td>표시 없음</td></tr>
+<tr><td><code>failed</code></td><td>로컬 쓰기 자체 실패(디스크 오류 등) 또는 서버가 쓰기를 거부(보안 규칙 위반)</td><td>alert "저장하지 못했어요" + 편집 내용 유지. 서버 거부는 Crashlytics 비치명 오류로 기록</td></tr>
+</table></div>
+<ul>
+<li>오프라인에서 저장하면 <code>savedLocally</code>로 성공 처리하고 시트를 닫는다. 문구는 "기기에 저장됨"이며 "동기화됨"이라고 하지 않는다.</li>
+<li>B 목록 위: pending 문서가 1개 이상이면 "동기화 대기 N개 · 연결되면 자동으로 올라가요", 오프라인이면 앞에 "오프라인 ·". B 행과 C 상세에는 pending 문서에만 <code>icloud.and.arrow.up</code> 아이콘(VoiceOver "아직 동기화되지 않음").</li>
+<li>같은 문서를 오프라인에서 여러 번 고치면 마지막 쓰기가 반영된다(Firestore 기본 동작). 한 사용자 데이터이므로 충돌 해결 UI는 두지 않는다.</li>
+</ul>
+
+<h3>R10. 데이터 삭제 (D21, D42)</h3>
+<ul>
+<li>모든 삭제는 Cloud Function이 <b>재귀 삭제</b>(<code>firestore.recursiveDelete(users/{uid})</code>)로 수행한다. 대상: 사용자 문서와 하위 컬렉션 <code>beans</code>, <code>notes</code>, <code>gear</code> 전체.</li>
+<li>함수는 멱등이다. 중간에 끊겨도 같은 호출을 다시 하면 남은 문서를 지우고, 이미 없으면 성공으로 응답한다.</li>
+<li>앱 쪽 계정 삭제 순서: (Apple 연결 시) Apple 재인증 → 토큰 철회 → <code>deleteAccount</code> 호출(데이터 재귀 삭제 후 Admin SDK로 Auth 사용자 삭제) → 로컬 Firestore 캐시 비우기(<code>clearPersistence</code>) → 새 익명 계정으로 빈 B.</li>
+<li>재시도: 호출 전에 Keychain에 <code>pendingDeletion = uid</code>를 기록하고 성공 후 지운다. 실패하면 alert "삭제를 마치지 못했어요" + "다시 시도". 앱을 다시 열었을 때 <code>pendingDeletion</code>이 있으면 B 대신 "계정 삭제를 마무리하고 있어요" 화면을 보이고 자동 재시도한다.</li>
+<li>Apple 서버 알림(<code>appleServerNotifications</code>): Apple JWS 서명 검증 → <code>sub</code>로 Firebase 사용자 조회 → <code>consent-revoked</code>, <code>account-deleted</code>면 재귀 삭제 + Auth 삭제, <code>email-enabled/disabled</code>는 기록만. 같은 알림이 여러 번 와도 결과가 같아야 한다(멱등).</li>
+</ul>
+
+<h3>R11. 태그 체계 마이그레이션</h3>
+<ol>
+<li>실행 조건: 번들 JSON의 <code>version</code> &gt; 사용자 문서 <code>taxonomyVersion</code>, 온라인 상태, 앱 포그라운드. 오프라인이면 다음 포그라운드로 미룬다.</li>
+<li>대상: 기기에 이미 구독 중인 전체 노트(D20)에서 새 taxonomy로 다시 계산한 <code>tagIndex</code>가 저장값과 다른 노트만.</li>
+<li>쓰기: 400개씩 <code>WriteBatch</code>(한도 500보다 여유). 각 배치는 <code>tagIndex</code>와 <code>updatedAt</code>만 바꾼다.</li>
+<li>재개: 진행 커서가 필요 없다. 다시 실행하면 "다른 노트만" 다시 계산하므로 남은 것만 처리된다(멱등). 배치 실패 시 지수 백오프로 3회 재시도 후 다음 실행으로 미룬다.</li>
+<li><code>taxonomyVersion</code>은 <b>모든 대상 노트가 성공한 뒤에만</b> 갱신한다. 중간에 앱이 종료돼도 다음 실행에서 1부터 다시 판단한다.</li>
+<li>마이그레이션 중에도 앱은 정상 사용 가능. 태그 필터 결과는 마이그레이션 완료 전까지 일부 부정확할 수 있다.</li>
+</ol>
+
+<!-- 7 -->
+<h2 id="firestore">7. Firestore 구조</h2>
+<pre><code>users/{uid}
+  ├─ createdAt: Timestamp
+  ├─ backupPromptDismissed: [String]   ← R8
+  ├─ taxonomyVersion: Int              ← R11
+  ├─ beans/{beanId}      ← Bean (origins 배열 포함)
+  ├─ notes/{noteId}      ← Note (beanId 필드로 원두 참조)
+  └─ gear/{gearId}       ← Gear (드리퍼·그라인더)</code></pre>
+<pre><code>cleanupTickets/{ticketId}   ← 서버 전용(클라이언트 접근 금지). anonUid, expiresAt(TTL 정책 30일)</code></pre>
+<ul>
+<li>노트를 원두 하위 컬렉션이 아니라 사용자 하위에 평평하게 둔다.</li>
+<li>앱은 <code>beans</code>, <code>notes</code>, <code>gear</code> 세 컬렉션 전체를 스냅샷 리스너로 구독하고(D20), 원두 이름 조인·정렬·검색·필터·원두별 노트·R2 레시피 불러오기를 모두 메모리의 전체 데이터로 처리한다.</li>
+<li>규모 가정: 노트 3,000개 이하, 원두 수백 개. 노트 1개는 약 1~2KB라 전체 수 MB 수준. 이 가정을 넘는 사용자가 생기면 v2에서 페이지네이션+서버 검색을 다시 검토한다.</li>
+<li>날짜(<code>DateOnly</code>)는 <code>"yyyy-MM-dd"</code> 문자열로 저장해 시간대 문제를 피한다. 문자열 정렬이 날짜 정렬과 같다.</li>
+</ul>
+<h3>쿼리와 인덱스</h3>
+<p>D20에 따라 화면용 쿼리는 컬렉션 전체 구독 3개뿐이며 <b>복합 인덱스가 필요 없다</b>. <code>tagIndex</code>는 기기에서 필터할 때 쓰고, 향후 서버 쿼리(<code>array-contains</code>)에도 그대로 쓸 수 있게 유지한다.</p>
+
+<h3>보안 규칙 (값 검증 포함, v1.1)</h3>
+<pre><code>rules_version = '2';
+service cloud.firestore {
+  match /databases/{db}/documents {
+    function isOwner(uid) { return request.auth != null &amp;&amp; request.auth.uid == uid; }
+    function optStr(d, k, max) { return !(k in d) || d[k] == null || (d[k] is string &amp;&amp; d[k].size() &lt;= max); }
+    function strReq(d, k, max) { return k in d &amp;&amp; d[k] is string &amp;&amp; d[k].size() &gt;= 1 &amp;&amp; d[k].size() &lt;= max; }
+    function tags(d, k) { return d[k] is list &amp;&amp; d[k].size() &lt;= 10; }
+    function axis(v) { return v is int &amp;&amp; v &gt;= 1 &amp;&amp; v &lt;= 5; }
+
+    function validNote(d) {
+      return d.keys().hasOnly(['beanId','drankOn','recipe','profile','fragranceTagIds','cupTagIds','tagIndex',
+                               'flavorMemo','review','score','rebuy','createdAt','updatedAt'])
+        &amp;&amp; strReq(d, 'beanId', 128)
+        &amp;&amp; d.drankOn is string &amp;&amp; d.drankOn.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
+        &amp;&amp; tags(d, 'fragranceTagIds') &amp;&amp; tags(d, 'cupTagIds')
+        &amp;&amp; d.tagIndex is list &amp;&amp; d.tagIndex.size() &lt;= 60
+        &amp;&amp; (d.score == null || (d.score is number &amp;&amp; d.score &gt;= 0 &amp;&amp; d.score &lt;= 100))
+        &amp;&amp; (!('rebuy' in d) || d.rebuy == null || d.rebuy in ['yes','maybe','no'])
+        &amp;&amp; (!('profile' in d) || d.profile == null ||
+            (axis(d.profile.aroma) &amp;&amp; axis(d.profile.acidity) &amp;&amp; axis(d.profile.sweetness)
+             &amp;&amp; axis(d.profile.aftertaste) &amp;&amp; axis(d.profile.body)))
+        &amp;&amp; optStr(d, 'flavorMemo', 200) &amp;&amp; optStr(d, 'review', 1000);
+    }
+    function validBean(d) {
+      return strReq(d, 'name', 60) &amp;&amp; strReq(d, 'roastery', 40)
+        &amp;&amp; d.origins is list &amp;&amp; d.origins.size() &lt;= 5
+        &amp;&amp; d.isFinished is bool &amp;&amp; d.blendRatioUnknown is bool
+        &amp;&amp; optStr(d, 'roasteryNotes', 200);
+    }
+    function validGear(d) {
+      return d.kind in ['brewer','grinder'] &amp;&amp; strReq(d, 'name', 40) &amp;&amp; optStr(d, 'memo', 100);
+    }
+
+    match /users/{uid} {
+      allow read, write: if isOwner(uid);
+      match /notes/{id} { allow read, delete: if isOwner(uid);
+                          allow create, update: if isOwner(uid) &amp;&amp; validNote(request.resource.data); }
+      match /beans/{id} { allow read, delete: if isOwner(uid);
+                          allow create, update: if isOwner(uid) &amp;&amp; validBean(request.resource.data); }
+      match /gear/{id}  { allow read, delete: if isOwner(uid);
+                          allow create, update: if isOwner(uid) &amp;&amp; validGear(request.resource.data); }
+    }
+    match /cleanupTickets/{id} { allow read, write: if false; }
+  }
+}</code></pre>
+<p class="meta">0.25 단위, 비율 합 100% 같은 계산 규칙은 규칙 언어로 표현하기 어려워 클라이언트 <code>NoteRule</code>/<code>BeanRule</code>에서 검증한다. 규칙은 Firebase Emulator 테스트로 검증한다(test-plan TST-S01~).</p>
+
+<h3>Cloud Functions</h3>
+<div class="tbl"><table>
+<tr><th style="width:190px">함수</th><th style="width:90px">종류</th><th>동작</th></tr>
+<tr><td><code>deleteAccount</code></td><td>Callable</td><td>호출자 uid의 <code>users/{uid}</code> 재귀 삭제 → Auth 사용자 삭제. 멱등(R10)</td></tr>
+<tr><td><code>prepareAnonymousCleanup</code></td><td>Callable</td><td>호출자가 익명 사용자인지 확인(<code>sign_in_provider == anonymous</code>) → 정리 티켓 생성, <code>ticketId</code> 반환(R7)</td></tr>
+<tr><td><code>cleanupAnonymous</code></td><td>Callable</td><td>호출자가 익명이 아닌 로그인 사용자인지 확인 → 티켓의 anonUid 데이터 재귀 삭제 + 익명 Auth 사용자 삭제 → 티켓 삭제. 티켓이 없으면 성공 응답(멱등)</td></tr>
+<tr><td><code>appleServerNotifications</code></td><td>HTTPS</td><td>Sign in with Apple 서버 간 알림 수신(D42, R10). Apple Developer의 Services ID에 이 URL을 등록</td></tr>
+</table></div>
+<p class="meta">모든 Callable은 App Check 적용을 권장(출시 체크리스트 T12). 함수 코드는 앱 저장소 <code>functions/</code>에 두고 Emulator로 테스트한다.</p>
+
+<!-- 8 -->
+<h2 id="screens">8. 화면 명세 A–L</h2>
+<p>화면 ID(A–L)는 <a href="design.html">design.html</a>의 목업과 같다. 탭 바(<code>TabView</code>) 3개: <b>노트(B)</b> · <b>원두(H)</b> · <b>설정(J)</b>. 앱은 실행 즉시 익명 계정으로 B를 보여준다.</p>
+<pre><code>(첫 실행: 익명 로그인 자동, 화면 없음)
+TabView
+├─ 노트 탭: B 노트 목록 ─push→ C 노트 상세
+│      ├─ 툴바 "+" ─sheet→ [D 노트 작성 ─push→ E 원두 선택 ─push→ F 원두 등록]
+│      │                               ├─push→ G 플레이버 태그
+│      │                               └─push→ K 장비 선택 ─push→ L 장비 등록
+│      ├─ 툴바 필터 ─sheet→ G (필터 모드)
+│      └─ 계정 연결 카드 ─sheet→ A 계정 연결
+├─ 원두 탭: H 원두 목록 ─push→ I 원두 상세 ─push→ C
+│      ├─ 툴바 "+" ─sheet→ F 원두 등록
+│      └─ I "이 원두로 노트 쓰기" ─sheet→ D (원두 미리 선택)
+└─ 설정 탭: J 설정 ─sheet→ A 계정 연결
+                   └─push→ K 내 장비 ─push→ L 장비 편집 (+ 툴바 "+" ─sheet→ L)</code></pre>
+<p class="meta">한 번에 한 개의 시트만 띄운다(D26). 시트 안의 이동은 모두 <code>NavigationStack</code> push.</p>
+
+<div class="screen" id="sA">
+<h3><span class="sid">A</span>Apple로 계속하기 (시트)</h3>
+<h4>목적</h4><p>익명으로 쓰던 기록을 Apple 계정에 보관하거나, 예전에 보관한 기록을 불러온다. 두 경우를 버튼 하나로 처리한다(D29, R7). 앱을 쓰기 위한 필수 단계가 아니다.</p>
+<h4>진입</h4><p>B의 계정 안내 카드, J의 "Apple로 계속하기". <code>.sheet</code> + <code>.presentationDetents([.medium])</code>.</p>
+<h4>구성</h4>
+<ul>
+<li>툴바 왼쪽 "닫기"(시스템 Close 버튼)</li>
+<li>제목 "기록을 안전하게 보관하세요", 혜택 2줄: "기기를 바꿔도 노트가 그대로 남아요" · "예전에 보관한 기록도 불러올 수 있어요"</li>
+<li><code>SignInWithAppleButton(.continue)</code> — "Apple로 계속하기". 다크 모드에서 <code>.white</code>, 라이트에서 <code>.black</code> 스타일. 높이 50pt, 화면 폭에 맞춤</li>
+<li>하단 보조 문구: "이메일 가리기를 선택해도 괜찮아요"</li>
+</ul>
+<h4>동작</h4>
+<ul>
+<li>R7 표의 1·2·3번에 따라 처리 → 시트 닫힘 → B 상단 인라인 확인(3초, VoiceOver 공지): 1번 "Apple 계정에 보관했어요", 2·3번 "기록을 불러왔어요"</li>
+</ul>
+<h4>상태</h4>
+<ul><li>진행 중: 버튼 위에 <code>ProgressView</code>, 중복 탭 방지</li><li>사용자 취소: 메시지 없이 A 유지</li><li>실패: alert "연결하지 못했어요. 다시 시도해 주세요."</li></ul>
+<h4>수용 기준</h4>
+<ul class="ac">
+<li>앱을 처음 열면 로그인 화면 없이 바로 B가 보인다</li>
+<li>처음 쓰는 Apple 계정으로 계속하면 익명으로 쓴 노트가 그대로 있다</li>
+<li>기록이 있는 Apple 계정으로 계속하면, 이 기기에 노트가 없을 때는 묻지 않고, 있을 때는 확인 후 불러온다</li>
+<li>Apple 시트에서 취소하면 오류 메시지가 뜨지 않는다</li>
+</ul>
+</div>
+
+<div class="screen" id="sB">
+<h3><span class="sid">B</span>노트 목록 (노트 탭 홈)</h3>
+<h4>목적</h4><p>모든 노트를 훑어보고, 정렬·검색·태그 필터로 찾는다.</p>
+<h4>구성</h4>
+<ul>
+<li><code>NavigationStack</code> + Large Title "노트"</li>
+<li>툴바 오른쪽: 정렬·필터 <code>Menu</code>(SF Symbol <code>line.3.horizontal.decrease.circle</code>; 항목: 최신순 ✓ / 점수순, 구분선, "태그로 거르기…") + 새 노트 버튼(<code>square.and.pencil</code>, 라벨 "새 노트")</li>
+<li><code>.searchable</code> 검색 필드: 원두 이름, 로스터리, 후기, 향미 메모, 태그 한국어 이름. 태그 필터가 적용되면 검색 필드 안에 <b>토큰</b>으로 표시(<code>.searchable(text:tokens:)</code>), 토큰을 지우면 필터 해제</li>
+<li>보관 안내 카드(R8): 목록 맨 위 섹션. 문구 + "Apple로 계속하기" 버튼 + 닫기(<code>xmark</code>, 44pt)</li>
+<li><code>List</code>(<code>.insetGrouped</code> 아님, <code>.plain</code> + 카드형 행). 행: 오각형(44pt, profile 없으면 점선 오각형), 원두 이름, 로스터리 · 마신 날, D+N 배지, 태그 최대 3개 + "+N", 오른쪽 점수</li>
+<li>Dynamic Type 접근성 크기(AX1 이상)에서는 행을 세로 배치로 바꾸고 오각형은 숨긴다</li>
+</ul>
+<h4>동작</h4>
+<ul>
+<li>행 탭 → C (push)</li>
+<li>행 스와이프(trailing) → "삭제"(destructive) → R6 확인 대화상자</li>
+<li>행 길게 누르기 → <code>.contextMenu</code>: 편집, 이 레시피로 새 노트, 삭제</li>
+<li>전체 노트를 한 번에 구독하고 <code>List</code>가 보이는 행만 그린다(페이지네이션 없음, D20)</li>
+</ul>
+<h4>상태</h4>
+<ul><li>빈 상태: <code>ContentUnavailableView</code> — 점선 오각형 이미지, "첫 잔을 기록해 보세요", 버튼 "노트 쓰기"</li><li>검색 결과 없음: <code>ContentUnavailableView.search(text:)</code></li><li>오프라인·동기화 대기: R9 배너("오프라인 · 동기화 대기 2개"), pending 노트 행 오른쪽 아래에 구름 아이콘</li></ul>
+<h4>수용 기준</h4>
+<ul class="ac"><li>최신순은 마신 날 내림차순, 같은 날은 작성 시각 내림차순이다</li><li>점수순에서 점수 없는 노트는 맨 아래에 있다</li><li>태그 필터는 검색 토큰으로 보이고, 텍스트 검색과 함께 쓸 수 있다</li><li>원두의 로스팅일이 없으면 D+N 배지가 보이지 않는다</li><li>보관 안내 카드는 첫 노트와 10번째 노트 저장 후에 각각 한 번 나타나고, 닫으면 그 단계는 다시 나타나지 않는다</li>
+<li>"베리"로 필터하면 블루베리 태그가 있는 노트도 나온다</li></ul>
+</div>
+
+<div class="screen" id="sC">
+<h3><span class="sid">C</span>노트 상세</h3>
+<h4>목적</h4><p>한 잔의 기록을 종이 노트처럼 한눈에 본다.</p>
+<h4>구성 (위→아래, <code>ScrollView</code>)</h4>
+<ol>
+<li>헤더: 원두 이름(<code>NavigationLink</code> → I), 로스터리 · 원산지 요약(Origin 표시 규칙), 로스팅일 / 마신 날 / D+N</li>
+<li>내 점수(크게, 라벨 "내 점수") + 재구매 의향(읽기 전용 표시). 동기화 대기 중이면 헤더 오른쪽에 구름 아이콘(R9)</li>
+<li>오각형(160pt) + 축별 값 표</li>
+<li>향과 맛: "프레그런스" 태그 줄, "컵 노트" 태그 줄(계열 색상 칩), 향미 메모, 로스터리 노트(원두에서 가져옴, 보조 색)</li>
+<li>추출 레시피 카드: 추출 방식(아이스면 "아이스" 배지) · 드리퍼 · 그라인더와 분쇄도("코만단테 C40 · 22클릭") · 원두량/물량 · 비율 · 온도 · 시간</li>
+<li>후기</li>
+</ol>
+<p>비어 있는 섹션은 숨긴다. Large Title을 쓰지 않고 inline 제목(원두 이름 줄임)을 쓴다.</p>
+<h4>동작</h4>
+<ul><li>툴바: "편집" 버튼 → D(편집 모드, 시트), <code>Menu</code>(<code>ellipsis.circle</code>): "이 레시피로 새 노트" → D(시트), "삭제"(destructive) → R6</li></ul>
+<h4>수용 기준</h4>
+<ul class="ac"><li>입력하지 않은 섹션은 화면에 나타나지 않는다</li><li>원두 이름을 탭하면 그 원두의 상세(I)로 간다</li><li>"이 레시피로 새 노트"는 이 노트의 레시피를 채운 새 노트를 연다</li></ul>
+</div>
+
+<div class="screen" id="sD">
+<h3><span class="sid">D</span>노트 작성 / 편집 (시트)</h3>
+<h4>목적</h4><p>한 화면에서 노트의 모든 항목을 입력한다. 필수는 원두와 마신 날뿐이다.</p>
+<h4>표시 방식</h4>
+<ul><li><code>.sheet</code>(large detent) 안에 <code>NavigationStack</code> + <code>Form</code>. 제목 "새 노트" / "노트 편집"(inline)</li>
+<li>툴바: 왼쪽 "취소"(<code>.cancellationAction</code>), 오른쪽 "저장"(<code>.confirmationAction</code>, 굵게)</li>
+<li>변경 사항이 있으면 스와이프 닫기를 막고, 스와이프 시도나 "취소" 모두 확인 메뉴 "변경 사항 버리기"(destructive) / "계속 편집"(D40, R6)</li></ul>
+<h4>구성 (Form 섹션 순서)</h4>
+<ol>
+<li><b>원두</b>: "원두" 행(<code>NavigationLink</code>, 선택값 표시) → E push. 마신 날 <code>DatePicker</code>(<code>.compact</code>, 기본 오늘, 미래 불가). 원두에 로스팅일이 있으면 행 오른쪽에 D+N</li>
+<li><b>추출 레시피</b>: R2 배너(섹션 상단 행) → 추출 방식(<code>Picker</code> 메뉴), 핫/아이스(<code>Picker(.segmented)</code>: 선택 안 함 / 핫 / 아이스), 드리퍼 행·그라인더 행(<code>NavigationLink</code> → K 선택 모드, 선택값 표시), 분쇄도(<code>TextField</code>, 선택한 그라인더의 단위를 trailing 보조 텍스트로 "클릭"), 원두량 g, 물량 g(<code>TextField</code> + <code>.keyboardType(.decimalPad)</code> / <code>.numberPad</code>, 단위는 trailing 보조 텍스트), 비율(읽기 전용 <code>LabeledContent</code>), 물 온도 ℃, 추출 시간(분·초 <code>Picker</code> 2열 휠)</li>
+<li><b>맛 그래프</b>: 꺼져 있으면 "맛 그래프 추가" 버튼 행. 켜면 오각형(200pt) + 축 5행, 각 행에 1~5 세그먼트(세그먼트당 44×44pt 이상). 섹션 footer에 "지우기" 버튼</li>
+<li><b>향과 맛</b>: "프레그런스" 태그 행, "컵 노트" 태그 행(각각 선택된 칩 표시, 탭 → G push, G 제목도 같은 이름), 향미 메모(<code>TextField(axis: .vertical)</code>, 플레이스홀더 "태그에 없는 향과 맛")</li>
+<li><b>평가</b>: 내 점수(꺼져 있으면 "내 점수 추가"; 켜면 정수 <code>Picker(.wheel)</code> + .00/.25/.50/.75 <code>Picker(.segmented)</code>), 재구매(<code>Picker(.segmented)</code>: 선택 안 함 / O / △ / X — VoiceOver 라벨 "다시 살래요 / 고민돼요 / 안 살래요"), 후기(여러 줄)</li>
+</ol>
+<h4>동작</h4>
+<ul>
+<li>저장 시 검증 실패 → 해당 행으로 스크롤 + 행 아래 오류 텍스트 + 오류 햅틱. "저장" 버튼은 비활성화하지 않음</li>
+<li>저장 성공 → 시트 닫힘. 작성 모드는 B에서 C로 push, 편집 모드는 C 갱신</li>
+<li>진입 경로별 초기값: B "새 노트" → 빈 노트 / I "이 원두로 노트 쓰기" → 원두 선택 + R2 / C "이 레시피로 새 노트" → 원두 + 그 노트의 레시피</li>
+<li>키보드 툴바에 "완료" 버튼(숫자 키패드에 리턴 키가 없으므로)</li>
+</ul>
+<h4>상태</h4>
+<ul><li>저장 중: "저장" 자리에 <code>ProgressView</code>, 폼 입력 잠금</li><li>오프라인 저장: 기기에 저장(<code>savedLocally</code>)하면 시트를 닫고 진행, 서버 동기화는 자동이며 R9 표시로 알림</li></ul>
+<h4>수용 기준</h4>
+<ul class="ac">
+<li>원두와 마신 날만 넣어도 저장된다</li>
+<li>같은 원두의 이전 노트가 있으면 새 노트에 가장 최근 레시피가 채워지고 배너가 보인다</li>
+<li>마신 날을 로스팅일보다 이전으로 고르면 저장되지 않고 메시지가 보인다</li>
+<li>원두량과 물량을 입력하면 비율이 즉시 1:xx.x로 보인다</li>
+<li>축 세그먼트를 바꾸면 오각형이 바로 갱신된다</li>
+<li>점수는 0.25 단위로만 입력된다</li>
+<li>변경 사항이 있을 때 시트를 쓸어내리면 시트가 닫히지 않고 확인 메뉴가 뜬다</li><li>변경 사항이 없으면 쓸어내려 바로 닫힌다</li><li>원두 등록(F)에서 돌아와도 작성 중이던 레시피·태그·메모가 그대로 있다</li><li>비행기 모드에서 저장하면 시트가 닫히고 목록에 구름 아이콘이 보이며, 연결되면 사라진다</li>
+</ul>
+</div>
+
+<div class="screen" id="sE">
+<h3><span class="sid">E</span>원두 선택 (D 안에서 push)</h3>
+<h4>목적</h4><p>노트에 연결할 원두를 고르거나 새로 등록한다.</p>
+<h4>구성</h4>
+<ul><li>제목 "원두 선택", <code>.searchable</code>(이름·로스터리)</li><li><code>List</code> 첫 섹션: "새 원두 등록" 행(<code>plus.circle</code>) → F push</li><li>"마시는 중" 섹션: 원두 행 — 이름, 로스터리 · 원산지 요약(블렌드면 "블렌드"), 로스팅일 · 오늘 기준 D+N, 노트 수. 선택된 원두에 체크마크</li><li>"다 마신 원두" 섹션: 같은 형식</li><li>정렬: 최근 노트를 쓴 순 → 노트가 없으면 등록순</li></ul>
+<h4>동작</h4>
+<ul><li>행 탭 → 선택하고 D로 pop → R2 적용</li><li>F에서 저장 → 그 원두를 선택한 상태로 D까지 pop</li></ul>
+<h4>수용 기준</h4>
+<ul class="ac"><li>새 원두를 등록하면 별도 탭 없이 바로 선택된다</li><li>다 마신 원두도 선택할 수 있다</li></ul>
+</div>
+
+<div class="screen" id="sF">
+<h3><span class="sid">F</span>원두 등록 / 편집</h3>
+<h4>표시 방식</h4><p>E에서 push(툴바 "저장"만, 뒤로 가기는 시스템 Back) 또는 H "+"·I "편집"에서 시트(취소 / 저장). 시트일 때 변경 사항 보호 규칙은 D와 같다.</p>
+<h4>구성 (Form)</h4>
+<ul><li>기본: 원두 이름*, 로스터리*(기존 로스터리 이름 자동완성 제안)</li><li><b>원산지</b> 섹션: 구성 원두 행 목록. 각 행은 "에티오피아 · 워시드 · 60%"처럼 요약 표시, 탭하면 구성 편집 화면 push(국가, 지역·농장, 품종, 가공방식 <code>Picker</code> 메뉴, 비율 % — 비율 필드는 구성이 2개 이상일 때만 표시). 행 스와이프로 삭제. 마지막 행 "구성 원두 추가"(5개까지). 구성이 2개 이상이면 섹션 제목 옆에 "블렌드" 배지, 구성 목록 아래 "비율 모름" <code>Toggle</code>(켜면 각 구성의 비율 표시·입력이 사라짐), 꺼져 있으면 footer에 비율 합계("합계 100%", 100이 아니면 <code>danger</code> 색)</li>
+<li>구매 용량: g (<code>TextField</code> + <code>.numberPad</code>, 선택)</li><li>로스팅: 로스팅 정도(<code>Picker</code> 메뉴 — 라벨이 길어 세그먼트로는 iPhone 폭에 맞지 않음), 로스팅일 "모름" <code>Toggle</code> + <code>DatePicker(.compact)</code></li><li>로스터리 노트(여러 줄)</li><li>편집 모드에서만: "다 마신 원두" <code>Toggle</code>, 맨 아래 별도 섹션 "원두 삭제"(destructive 텍스트 버튼, R6)</li></ul>
+<h4>수용 기준</h4>
+<ul class="ac"><li>이름과 로스터리가 없으면 저장되지 않는다</li><li>기존 노트의 마신 날보다 늦은 로스팅일로는 바꿀 수 없다</li><li>구성을 2개 이상 넣으면 블렌드로 표시된다</li><li>"비율 모름"이 꺼져 있으면 모든 구성의 비율이 있고 합이 100%여야 저장된다</li><li>"비율 모름"을 켜면 비율 없이 저장되고 "블렌드 · 에티오피아, 브라질"로 표시된다</li><li>원산지를 하나도 넣지 않아도 저장된다</li><li>원두 삭제 확인 대화상자에 연결된 노트 수가 나온다</li></ul>
+</div>
+
+<div class="screen" id="sG">
+<h3><span class="sid">G</span>플레이버 태그 선택</h3>
+<h4>목적</h4><p>자체 분류 체계(부록)에서 태그를 고른다. 두 가지 모드: <b>선택 모드</b>(D 안에서 push, 여러 개, 제목 "프레그런스" 또는 "컵 노트") · <b>필터 모드</b>(B에서 시트, 1개, 제목 "태그로 거르기").</p>
+<h4>구성</h4>
+<ul>
+<li><code>.searchable</code>(한국어 이름). 선택 모드에서는 목록 위에 "선택됨 3/10" + 선택된 칩 가로 스크롤(칩을 탭하면 해제, 칩 높이 32pt + 터치 영역 44pt)</li>
+<li>첫 단계: 계열 8개를 색상 타일 2열 그리드(타일 높이 64pt 이상)로 표시 → 탭하면 그 계열 목록으로 push</li>
+<li>하위 목록(<code>List</code>): 맨 위 행 "‘과일’ 전체" — 그 단계 자체를 선택(체크마크). 그 아래 하위 행 — <b>하위가 있으면 행 전체가 push</b>(disclosure indicator, 하위 선택이 있으면 오른쪽에 선택된 이름을 강조색으로), <b>하위가 없으면 행 전체가 선택 토글</b>(체크마크). 한 행에 탭 영역을 둘로 나누지 않는다</li>
+<li>검색 중에는 계층 대신 일치하는 노드를 평평한 목록으로, 경로를 보조 텍스트로 표시 (예: 블루베리 — 과일 › 베리). 모든 결과 행은 선택 토글</li>
+</ul>
+<h4>동작</h4>
+<ul><li>선택 규칙은 R5</li><li>10개를 선택하면 선택하지 않은 행은 흐리게 비활성화하고, 목록 상단 문구를 "10개까지 고를 수 있어요"로 바꾼다(토스트 대신 인라인 안내 + 경고 햅틱)</li><li>선택 모드: 변경 즉시 D에 반영, 시스템 Back으로 돌아감. 필터 모드: 탭 즉시 적용하고 시트 닫힘, 툴바 왼쪽 "취소"</li></ul>
+<h4>수용 기준</h4>
+<ul class="ac"><li>1·2·3단계 어느 것이든 선택할 수 있다</li><li>"블루베리"를 고르면 같은 목록에서 이미 고른 "베리"와 "과일"은 해제된다</li><li>프레그런스와 컵 노트에서 같은 태그를 각각 고를 수 있다</li><li>검색 결과에 경로가 함께 보인다</li><li>deprecated 태그는 목록에 나오지 않지만, 기존 노트에서는 계속 보인다</li></ul>
+</div>
+
+<div class="screen" id="sH">
+<h3><span class="sid">H</span>원두 목록 (원두 탭 홈)</h3>
+<h4>구성</h4>
+<ul><li>Large Title "원두", 툴바 오른쪽 "+"(<code>plus</code>, 라벨 "원두 등록") → F 시트</li><li>목록 위 <code>Picker(.segmented)</code>: 마시는 중 / 다 마심, <code>.searchable</code></li><li>원두 카드 행: 이름, 로스터리, 원산지 요약(블렌드면 "블렌드 · 에티오피아 60% / 브라질 40%"), 로스팅일 · 오늘 기준 D+N, 노트 수, 평균 점수(점수 있는 노트만), 최근 노트의 오각형(60pt)</li><li>스와이프: "다 마심" 토글(leading), "삭제"(trailing, R6). 길게 누르기: 편집, 이 원두로 노트 쓰기, 삭제</li></ul>
+<h4>상태</h4>
+<ul><li>빈 상태: <code>ContentUnavailableView</code> "원두를 등록하면 여러 잔의 기록을 한곳에 모을 수 있어요" + "원두 등록"</li></ul>
+<h4>수용 기준</h4>
+<ul class="ac"><li>평균 점수는 점수가 있는 노트만으로 계산하고 소수 둘째 자리까지 표시한다</li><li>노트가 없으면 평균 점수와 오각형 대신 "아직 노트가 없어요"가 보인다</li></ul>
+</div>
+
+<div class="screen" id="sI">
+<h3><span class="sid">I</span>원두 상세</h3>
+<h4>목적</h4><p>같은 원두를 여러 번 마신 기록을 시간순으로 비교한다(F6의 핵심 화면).</p>
+<h4>구성</h4>
+<ol>
+<li>원두 정보 섹션(F의 모든 값: 구성 원두 목록, 구매 용량 포함), 로스터리 노트</li>
+<li>요약: 노트 수, 평균 점수, 최고 점수</li>
+<li><b>기록 표</b>: 열 = D+N · 마신 날 · 점수 · 드리퍼 · 분쇄도 · 비율 · 재구매. 행 = 노트(D+N 오름차순). 행 탭 → C. 접근성 크기에서는 표 대신 행별 카드로 전환</li>
+<li>노트 카드 목록: 각 카드에 오각형(88pt) + 태그</li>
+<li>하단 <code>.safeAreaInset(edge: .bottom)</code>에 주 버튼 "이 원두로 노트 쓰기"(<code>.borderedProminent</code>, <code>.controlSize(.large)</code>) → D 시트</li>
+</ol>
+<h4>동작</h4>
+<ul><li>툴바 "편집" → F 시트</li></ul>
+<h4>수용 기준</h4>
+<ul class="ac"><li>기록 표는 D+N 오름차순이다. 로스팅일이 없으면 마신 날 오름차순이고 D+N 열은 "—"</li><li>"이 원두로 노트 쓰기"로 연 노트에는 최근 레시피가 채워져 있다</li></ul>
+</div>
+
+<div class="screen" id="sJ">
+<h3><span class="sid">J</span>설정</h3>
+<h4>구성 (<code>Form</code>, <code>.insetGrouped</code>)</h4>
+<ul>
+<li><b>계정</b> 섹션 — 익명: "Apple로 계속하기" → A, footer "Apple 계정에 보관하지 않으면 앱을 지우거나 기기를 바꿀 때 기록이 사라져요. 예전에 보관한 기록도 여기서 불러올 수 있어요." / Apple 연결됨: "Sign in with Apple 사용 중" + 이메일(가려진 릴레이 주소일 수 있음), "로그아웃"</li>
+<li><b>기록</b> 섹션: "내 장비" → K push (오른쪽에 등록 개수)</li>
+<li><b>정보</b> 섹션: 앱 버전, 개인정보처리방침(GitHub Pages URL, <code>SFSafariViewController</code>로 열기), 오픈소스 라이선스, 플레이버 태그 안내("SCA·WCR 플레이버휠을 참고해 자체 구성했어요")</li>
+<li>마지막 섹션: "계정 삭제"(연결됨) 또는 "모든 데이터 삭제"(익명) — destructive 텍스트 버튼</li>
+</ul>
+<h4>계정 삭제 흐름 (D21, R10)</h4>
+<ol><li>확인 대화상자: 제목 "모든 원두, 노트, 장비가 삭제되고 되돌릴 수 없어요", 버튼 "계정 삭제"(destructive). 익명이면 "모든 데이터 삭제"</li><li>(Apple 연결 시) Apple 재인증 → authorization code로 Apple 토큰 철회(Firebase Auth SDK)</li><li><code>deleteAccount</code> 호출 — 진행 중에는 전체 화면 <code>ProgressView</code> "삭제하고 있어요"</li><li>성공 → 로컬 캐시 비우기 → 새 익명 계정으로 빈 B. 실패 → R10 재시도 흐름</li></ol>
+<div class="note">토큰 철회 API와 Sign in with Apple 설정(Services ID, 서버 알림 URL 등록)은 구현 시 현재 Firebase·Apple 문서로 확인한다(출시 체크리스트 T2, T9).</div>
+<h4>수용 기준</h4>
+<ul class="ac"><li>로그아웃 전 확인 대화상자가 "새 빈 기록으로 시작한다"는 점을 알려 준다</li><li>로그아웃 후 같은 Apple 계정으로 로그인하면 데이터가 그대로 있다</li><li>계정 삭제 후 같은 Apple 계정으로 로그인하면 빈 상태로 시작한다</li><li>삭제 후 Firestore에 <code>users/{uid}</code>와 <code>beans</code>·<code>notes</code>·<code>gear</code> 문서가 하나도 남지 않는다</li><li>삭제 도중 네트워크가 끊겨도 다시 시도하면 끝까지 삭제된다</li></ul>
+</div>
+
+<div class="screen" id="sK">
+<h3><span class="sid">K</span>내 장비 / 장비 선택</h3>
+<h4>목적</h4><p>드리퍼(추출 기구)와 그라인더를 관리하고, 레시피에서 고른다. 두 가지 모드: <b>관리 모드</b>(J에서 push) · <b>선택 모드</b>(D의 드리퍼·그라인더 행에서 push, 해당 종류만 표시).</p>
+<h4>구성</h4>
+<ul>
+<li>관리 모드: 제목 "내 장비", 툴바 "+"(<code>plus</code>, 라벨 "장비 추가") → L 시트. <code>List</code> 섹션 "드리퍼·추출 기구" / "그라인더". 행: 이름, 그라인더면 보조 텍스트로 단위("클릭"), 이 장비를 쓴 노트 수</li>
+<li>선택 모드: 제목 "드리퍼 선택" / "그라인더 선택". 첫 행 "선택 안 함", 이어서 장비 행(선택된 행에 체크마크), 마지막 행 "새 드리퍼 추가"(<code>plus.circle</code>) → L push</li>
+</ul>
+<h4>동작</h4>
+<ul><li>관리 모드: 행 탭 → L(편집) push, 스와이프 "삭제" → 확인 대화상자 "과거 노트에는 장비 이름이 남아요"(D31)</li><li>선택 모드: 행 탭 → 선택하고 D로 pop. L에서 저장하면 그 장비를 선택한 상태로 D까지 pop</li></ul>
+<h4>상태</h4>
+<ul><li>빈 상태(관리 모드): <code>ContentUnavailableView</code> "드리퍼와 그라인더를 등록하면 분쇄도를 정확히 기록할 수 있어요" + "장비 추가"</li></ul>
+<h4>수용 기준</h4>
+<ul class="ac"><li>선택 모드에서는 고르려는 종류의 장비만 보인다</li><li>노트 작성 중에 새 장비를 추가하면 바로 선택된다</li><li>장비를 삭제해도 그 장비를 쓴 과거 노트에 이름이 남아 있다</li></ul>
+</div>
+
+<div class="screen" id="sL">
+<h3><span class="sid">L</span>장비 등록 / 편집</h3>
+<h4>표시 방식</h4><p>K 관리 모드의 "+"에서는 시트(취소 / 저장), 그 밖에는 push(저장만).</p>
+<h4>구성 (Form)</h4>
+<ul><li>종류: <code>Picker(.segmented)</code> 드리퍼·추출 기구 / 그라인더 (선택 모드에서 들어오면 종류 고정)</li><li>이름*(예: "하리오 V60 02 세라믹", "코만단테 C40")</li><li>그라인더일 때만: 분쇄도 단위(예: "클릭", 기본값 "클릭")</li><li>메모</li><li>편집 모드: 맨 아래 "장비 삭제"(destructive, K와 같은 확인)</li></ul>
+<h4>수용 기준</h4>
+<ul class="ac"><li>이름이 없으면 저장되지 않는다</li><li>그라인더의 분쇄도 단위를 바꾸면 그 그라인더를 쓴 노트의 분쇄도 표시도 바뀐다</li></ul>
+</div>
+
+<!-- 9 -->
+<h2 id="nfr">9. 비기능 요구사항</h2>
+<div class="tbl"><table>
+<tr><th style="width:150px">항목</th><th>요구사항</th></tr>
+<tr><td>오프라인</td><td>Firestore 오프라인 캐시로 읽기·쓰기 모두 동작. 온라인이 되면 자동 동기화</td></tr>
+<tr><td>성능</td><td>노트 3,000개 기준 B 첫 화면 1초 이내(캐시), 검색 입력 반응 100ms 이내, 스크롤 60fps. 오각형은 <code>Shape</code>로 그려 셀마다 가볍게 유지. 검색용 소문자 문자열은 노트 로드 시 한 번만 만들어 둔다</td></tr>
+<tr><td>최신 iOS</td><td>iOS 17과 iOS 26(Liquid Glass) 실기기·시뮬레이터에서 시트 크기·전환, 툴바, 탭 바를 확인. 바 배경을 직접 지정하지 않는다(D41)</td></tr>
+<tr><td>HIG</td><td>design.html 1장의 검토 표를 따른다. 새 화면을 추가할 때도 같은 표로 점검</td></tr>
+<tr><td>터치 영역</td><td>모든 상호작용 요소 44×44pt 이상(보이는 크기가 작으면 <code>.contentShape</code>로 영역 확장)</td></tr>
+<tr><td>접근성</td><td>Dynamic Type 전 단계 대응(접근성 크기에서 행 레이아웃 세로 전환), 최소 글자 크기는 <code>.caption2</code>(11pt). 오각형은 하나의 요소로 묶어 VoiceOver 라벨("아로마 4, 산미 5, 단맛 4, 후미 3, 바디 2")과 <code>.accessibilityChartDescriptor</code> 제공. 태그는 색과 텍스트를 함께 표시. 텍스트 대비 4.5:1 이상, 고대비 설정(Increase Contrast)용 색 변형 제공. Reduce Motion이면 오각형 애니메이션 끔</td></tr>
+<tr><td>다크 모드</td><td>모든 화면 지원 (색상 토큰은 design.html)</td></tr>
+<tr><td>개인정보</td><td>사용자 본인만 자신의 데이터 접근(보안 규칙). 진단은 Crashlytics만(D36), Analytics·광고 SDK 없음. 추적(ATT) 대상 아님</td></tr>
+<tr><td>테스트</td><td>테스트 케이스와 ID는 <b>test-plan.md</b>가 기준이다. 규칙(R1~R11)과 화면 수용 기준마다 테스트 ID가 연결되어 있고, 구현 완료는 해당 테스트 통과로 판단한다</td></tr>
+</table></div>
+
+<!-- 10 -->
+<h2 id="taxonomy">10. 부록: 플레이버 태그 체계 v1</h2>
+<p>SCA·WCR 플레이버휠과 WCR Sensory Lexicon을 <b>참고</b>해 한국 홈카페 사용자 기준으로 다시 묶은 자체 분류다. 휠의 구조와 다르게 계열을 나눴고, 한국어 이름은 일상 표현을 우선했다. <code>refTerm</code>은 같은 대상을 가리키는 영문 표준 용어로, 커뮤니티 기능에서 다른 체계와 연결할 때 쓴다(대응 용어가 없으면 —).</p>
+<div class="note">출시 전 확인: 개별 단어(예: Blueberry)를 매핑 값으로 쓰는 건 휠 자체를 복제하는 것과 다르지만, 법률 판단은 아니에요. 출시 전에 SCA에 한 번 문의해 두는 걸 권해요. 한국어 이름은 검토가 필요해요.</div>
+<div class="info">D33에 따라 SCA에 문의하지 않고 진행한다. 앱과 스토어 설명에는 "SCA·WCR 플레이버휠을 참고해 자체 구성"이라고만 쓰고, SCA 로고·휠 이미지·휠 배치는 쓰지 않는다.</div>
+<p>아래 표는 <code>flavor_taxonomy.json</code>(version 1)의 전체 내용이다. 1단계 8개 · 2단계 42개 · 3단계 60개, 총 110개 노드(v1.1에서 D43 반영). 형식 규칙은 <code>flavor_taxonomy.schema.json</code>.</p>
+<h4>JSON 형식</h4>
+<pre><code>{
+  "version": 1,
+  "updated": "2026-11-17",
+  "nodes": [
+    { "id": "fruit", "parentId": null, "level": 1, "nameKo": "과일", "refTerm": "Fruity", "group": "fruit" },
+    { "id": "fruit.berry", "parentId": "fruit", "level": 2, "nameKo": "베리", "refTerm": "Berry", "group": "fruit" },
+    { "id": "fruit.berry.blueberry", "parentId": "fruit.berry", "level": 3, "nameKo": "블루베리", "refTerm": "Blueberry", "group": "fruit" }
+  ]
+}</code></pre>
+<p class="meta">ID 규칙: 소문자 영문과 밑줄, 단계는 마침표로 구분. 배열 순서 = 화면 표시 순서. 선택 필드 <code>deprecated: true</code>.</p>
+<div class="tbl"><table class="tree">
+<tr><th>태그 (한국어)</th><th>ID</th><th>refTerm</th></tr>
+<tr><td class="l1">과일</td><td class="mono">fruit</td><td>Fruity</td></tr>
+<tr><td class="l2">시트러스</td><td class="mono">fruit.citrus</td><td>Citrus Fruit</td></tr>
+<tr><td class="l3">레몬</td><td class="mono">fruit.citrus.lemon</td><td>Lemon</td></tr>
+<tr><td class="l3">라임</td><td class="mono">fruit.citrus.lime</td><td>Lime</td></tr>
+<tr><td class="l3">오렌지</td><td class="mono">fruit.citrus.orange</td><td>Orange</td></tr>
+<tr><td class="l3">자몽</td><td class="mono">fruit.citrus.grapefruit</td><td>Grapefruit</td></tr>
+<tr><td class="l3">귤</td><td class="mono">fruit.citrus.mandarin</td><td>Mandarin</td></tr>
+<tr><td class="l3">베르가못</td><td class="mono">fruit.citrus.bergamot</td><td>Bergamot</td></tr>
+<tr><td class="l3">유자</td><td class="mono">fruit.citrus.yuzu</td><td>Yuzu</td></tr>
+<tr><td class="l2">베리</td><td class="mono">fruit.berry</td><td>Berry</td></tr>
+<tr><td class="l3">딸기</td><td class="mono">fruit.berry.strawberry</td><td>Strawberry</td></tr>
+<tr><td class="l3">라즈베리</td><td class="mono">fruit.berry.raspberry</td><td>Raspberry</td></tr>
+<tr><td class="l3">블루베리</td><td class="mono">fruit.berry.blueberry</td><td>Blueberry</td></tr>
+<tr><td class="l3">블랙베리</td><td class="mono">fruit.berry.blackberry</td><td>Blackberry</td></tr>
+<tr><td class="l3">크랜베리</td><td class="mono">fruit.berry.cranberry</td><td>Cranberry</td></tr>
+<tr><td class="l3">블랙커런트</td><td class="mono">fruit.berry.blackcurrant</td><td>Blackcurrant</td></tr>
+<tr><td class="l2">핵과</td><td class="mono">fruit.stone</td><td>Stone Fruit</td></tr>
+<tr><td class="l3">복숭아</td><td class="mono">fruit.stone.peach</td><td>Peach</td></tr>
+<tr><td class="l3">천도복숭아</td><td class="mono">fruit.stone.nectarine</td><td>Nectarine</td></tr>
+<tr><td class="l3">살구</td><td class="mono">fruit.stone.apricot</td><td>Apricot</td></tr>
+<tr><td class="l3">자두</td><td class="mono">fruit.stone.plum</td><td>Plum</td></tr>
+<tr><td class="l3">체리</td><td class="mono">fruit.stone.cherry</td><td>Cherry</td></tr>
+<tr><td class="l2">사과·배</td><td class="mono">fruit.pome</td><td>—</td></tr>
+<tr><td class="l3">사과</td><td class="mono">fruit.pome.apple</td><td>Apple</td></tr>
+<tr><td class="l3">청사과</td><td class="mono">fruit.pome.green_apple</td><td>Green Apple</td></tr>
+<tr><td class="l3">배</td><td class="mono">fruit.pome.pear</td><td>Pear</td></tr>
+<tr><td class="l2">포도</td><td class="mono">fruit.grape</td><td>Grape</td></tr>
+<tr><td class="l3">청포도</td><td class="mono">fruit.grape.white_grape</td><td>White Grape</td></tr>
+<tr><td class="l2">열대과일</td><td class="mono">fruit.tropical</td><td>Tropical Fruit</td></tr>
+<tr><td class="l3">파인애플</td><td class="mono">fruit.tropical.pineapple</td><td>Pineapple</td></tr>
+<tr><td class="l3">망고</td><td class="mono">fruit.tropical.mango</td><td>Mango</td></tr>
+<tr><td class="l3">패션프루트</td><td class="mono">fruit.tropical.passion_fruit</td><td>Passion Fruit</td></tr>
+<tr><td class="l3">리치</td><td class="mono">fruit.tropical.lychee</td><td>Lychee</td></tr>
+<tr><td class="l3">파파야</td><td class="mono">fruit.tropical.papaya</td><td>Papaya</td></tr>
+<tr><td class="l3">코코넛</td><td class="mono">fruit.tropical.coconut</td><td>Coconut</td></tr>
+<tr><td class="l2">말린 과일</td><td class="mono">fruit.dried</td><td>Dried Fruit</td></tr>
+<tr><td class="l3">건포도</td><td class="mono">fruit.dried.raisin</td><td>Raisin</td></tr>
+<tr><td class="l3">건자두</td><td class="mono">fruit.dried.prune</td><td>Prune</td></tr>
+<tr><td class="l3">대추야자</td><td class="mono">fruit.dried.date</td><td>Date</td></tr>
+<tr><td class="l3">무화과</td><td class="mono">fruit.dried.fig</td><td>Fig</td></tr>
+<tr><td class="l1">꽃</td><td class="mono">floral</td><td>Floral</td></tr>
+<tr><td class="l2">자스민</td><td class="mono">floral.jasmine</td><td>Jasmine</td></tr>
+<tr><td class="l2">장미</td><td class="mono">floral.rose</td><td>Rose</td></tr>
+<tr><td class="l2">캐모마일</td><td class="mono">floral.chamomile</td><td>Chamomile</td></tr>
+<tr><td class="l2">오렌지 꽃</td><td class="mono">floral.orange_blossom</td><td>Orange Blossom</td></tr>
+<tr><td class="l2">라벤더</td><td class="mono">floral.lavender</td><td>Lavender</td></tr>
+<tr><td class="l2">엘더플라워</td><td class="mono">floral.elderflower</td><td>Elderflower</td></tr>
+<tr><td class="l1">단맛</td><td class="mono">sweet</td><td>Sweet</td></tr>
+<tr><td class="l2">꿀</td><td class="mono">sweet.honey</td><td>Honey</td></tr>
+<tr><td class="l2">흑설탕</td><td class="mono">sweet.brown_sugar</td><td>Brown Sugar</td></tr>
+<tr><td class="l2">캐러멜</td><td class="mono">sweet.caramel</td><td>Caramelized</td></tr>
+<tr><td class="l2">메이플 시럽</td><td class="mono">sweet.maple_syrup</td><td>Maple Syrup</td></tr>
+<tr><td class="l2">당밀</td><td class="mono">sweet.molasses</td><td>Molasses</td></tr>
+<tr><td class="l2">바닐라</td><td class="mono">sweet.vanilla</td><td>Vanilla</td></tr>
+<tr><td class="l2">토피</td><td class="mono">sweet.toffee</td><td>Toffee</td></tr>
+<tr><td class="l1">견과·초콜릿</td><td class="mono">nutty</td><td>Nutty/Cocoa</td></tr>
+<tr><td class="l2">견과</td><td class="mono">nutty.nut</td><td>Nutty</td></tr>
+<tr><td class="l3">아몬드</td><td class="mono">nutty.nut.almond</td><td>Almond</td></tr>
+<tr><td class="l3">헤이즐넛</td><td class="mono">nutty.nut.hazelnut</td><td>Hazelnut</td></tr>
+<tr><td class="l3">땅콩</td><td class="mono">nutty.nut.peanut</td><td>Peanuts</td></tr>
+<tr><td class="l3">호두</td><td class="mono">nutty.nut.walnut</td><td>Walnut</td></tr>
+<tr><td class="l3">마카다미아</td><td class="mono">nutty.nut.macadamia</td><td>Macadamia</td></tr>
+<tr><td class="l2">초콜릿</td><td class="mono">nutty.cocoa</td><td>Cocoa</td></tr>
+<tr><td class="l3">밀크초콜릿</td><td class="mono">nutty.cocoa.milk_chocolate</td><td>Milk Chocolate</td></tr>
+<tr><td class="l3">다크초콜릿</td><td class="mono">nutty.cocoa.dark_chocolate</td><td>Dark Chocolate</td></tr>
+<tr><td class="l3">카카오닙</td><td class="mono">nutty.cocoa.cacao_nib</td><td>Cacao Nib</td></tr>
+<tr><td class="l1">향신료·허브</td><td class="mono">spice</td><td>Spices</td></tr>
+<tr><td class="l2">향신료</td><td class="mono">spice.spice</td><td>Brown Spice</td></tr>
+<tr><td class="l3">시나몬</td><td class="mono">spice.spice.cinnamon</td><td>Cinnamon</td></tr>
+<tr><td class="l3">정향</td><td class="mono">spice.spice.clove</td><td>Clove</td></tr>
+<tr><td class="l3">넛멕</td><td class="mono">spice.spice.nutmeg</td><td>Nutmeg</td></tr>
+<tr><td class="l3">아니스</td><td class="mono">spice.spice.anise</td><td>Anise</td></tr>
+<tr><td class="l3">후추</td><td class="mono">spice.spice.pepper</td><td>Pepper</td></tr>
+<tr><td class="l3">생강</td><td class="mono">spice.spice.ginger</td><td>Ginger</td></tr>
+<tr><td class="l3">카다멈</td><td class="mono">spice.spice.cardamom</td><td>Cardamom</td></tr>
+<tr><td class="l2">허브</td><td class="mono">spice.herb</td><td>Herb-like</td></tr>
+<tr><td class="l3">민트</td><td class="mono">spice.herb.mint</td><td>Mint</td></tr>
+<tr><td class="l3">바질</td><td class="mono">spice.herb.basil</td><td>Basil</td></tr>
+<tr><td class="l3">레몬그라스</td><td class="mono">spice.herb.lemongrass</td><td>Lemongrass</td></tr>
+<tr><td class="l1">차·곡물·로스트</td><td class="mono">roast</td><td>—</td></tr>
+<tr><td class="l2">차</td><td class="mono">roast.tea</td><td>Tea</td></tr>
+<tr><td class="l3">홍차</td><td class="mono">roast.tea.black_tea</td><td>Black Tea</td></tr>
+<tr><td class="l3">녹차</td><td class="mono">roast.tea.green_tea</td><td>Green Tea</td></tr>
+<tr><td class="l3">우롱차</td><td class="mono">roast.tea.oolong</td><td>Oolong</td></tr>
+<tr><td class="l3">얼그레이</td><td class="mono">roast.tea.earl_grey</td><td>—</td></tr>
+<tr><td class="l2">곡물</td><td class="mono">roast.grain</td><td>Cereal</td></tr>
+<tr><td class="l3">몰트</td><td class="mono">roast.grain.malt</td><td>Malt</td></tr>
+<tr><td class="l3">토스트</td><td class="mono">roast.grain.toast</td><td>Toast</td></tr>
+<tr><td class="l3">비스킷</td><td class="mono">roast.grain.biscuit</td><td>Biscuit</td></tr>
+<tr><td class="l2">로스트</td><td class="mono">roast.roasted</td><td>Roasted</td></tr>
+<tr><td class="l3">담배</td><td class="mono">roast.roasted.tobacco</td><td>Tobacco</td></tr>
+<tr><td class="l3">스모키</td><td class="mono">roast.roasted.smoky</td><td>Smoky</td></tr>
+<tr><td class="l3">시더</td><td class="mono">roast.roasted.cedar</td><td>Cedar</td></tr>
+<tr><td class="l1">발효·주류</td><td class="mono">fermented</td><td>Alcohol/Fermented</td></tr>
+<tr><td class="l2">와인</td><td class="mono">fermented.wine</td><td>Winey</td></tr>
+<tr><td class="l2">럼</td><td class="mono">fermented.rum</td><td>Rum</td></tr>
+<tr><td class="l2">위스키</td><td class="mono">fermented.whiskey</td><td>Whiskey</td></tr>
+<tr><td class="l2">발효</td><td class="mono">fermented.ferment</td><td>Fermented</td></tr>
+<tr><td class="l2">요거트</td><td class="mono">fermented.yogurt</td><td>Yogurt</td></tr>
+<tr><td class="l1">결점</td><td class="mono">defect</td><td>—</td></tr>
+<tr><td class="l2">풋내</td><td class="mono">defect.green</td><td>Green/Vegetative</td></tr>
+<tr><td class="l2">종이</td><td class="mono">defect.papery</td><td>Papery</td></tr>
+<tr><td class="l2">나무</td><td class="mono">defect.woody</td><td>Woody</td></tr>
+<tr><td class="l2">흙</td><td class="mono">defect.earthy</td><td>Earthy</td></tr>
+<tr><td class="l2">곰팡이</td><td class="mono">defect.musty</td><td>Musty</td></tr>
+<tr><td class="l2">탄맛</td><td class="mono">defect.burnt</td><td>Burnt</td></tr>
+<tr><td class="l2">재</td><td class="mono">defect.ashy</td><td>Ashy</td></tr>
+<tr><td class="l2">고무</td><td class="mono">defect.rubber</td><td>Rubber</td></tr>
+<tr><td class="l2">약품</td><td class="mono">defect.medicinal</td><td>Medicinal</td></tr>
+<tr><td class="l2">과한 신맛</td><td class="mono">defect.sour</td><td>Sour</td></tr>
+</table></div>
+
+<!-- 11 -->
+<h2 id="release">11. 출시 체크리스트</h2>
+<p>스펙의 결정은 모두 끝났다. 아래는 구현·출시 과정에서 <b>할 일</b>이다(결정이 아니라 실행). 우선순위 P0(개발 착수 전) · P1(첫 TestFlight 전) · P2(심사 제출 전).</p>
+<div class="tbl"><table>
+<tr><th style="width:44px">#</th><th>할 일</th><th style="width:110px">시점</th></tr>
+<tr><td>T1</td><td><code>flavor_taxonomy.json</code> 한국어 이름 최종 검토(v1.1에서 곡물·사과·배·포도·과한 신맛 수정 완료). 첫 출시 후에는 ID 변경 금지</td><td>P0</td></tr>
+<tr><td>T2</td><td>Firebase iOS SDK의 Apple 토큰 철회 API, 익명 계정 link 오류 코드(이미 사용 중인 자격 증명) 확인 후 R7·R10 구현</td><td>P1</td></tr>
+<tr><td>T10</td><td>Firebase 프로젝트를 Blaze 요금제로 전환하고 예산 알림 설정(예: 월 1,000원), Cloud Functions 배포, <code>cleanupTickets</code> TTL 정책 설정</td><td>P0</td></tr>
+<tr><td>T3</td><td>보안 규칙 배포 및 Emulator 테스트 통과(복합 인덱스는 v1.1부터 불필요)</td><td>P1</td></tr>
+<tr><td>T4</td><td>Crashlytics dSYM 업로드 빌드 단계 설정</td><td>P1</td></tr>
+<tr><td>T5</td><td>개인정보처리방침 작성 후 GitHub Pages 게시. 포함: Firebase Authentication이 처리하는 정보(사용자 ID, Apple 이메일), Firestore에 저장되는 원두·노트·장비 기록, Crashlytics 진단 정보, 서비스 제공자(Google/Firebase), 보관 기간(계정 삭제 시까지), 계정·데이터 삭제 방법과 삭제가 중간에 실패했을 때의 처리(자동 재시도)</td><td>P2</td></tr>
+<tr><td>T6</td><td>App Store 개인정보 라벨 초안: 연락처 정보(이메일, Apple 로그인 시), 사용자 콘텐츠(기타), 식별자(사용자 ID) — 사용자에 연결됨, 목적 앱 기능. 진단(충돌 데이터, 기타 진단 데이터) — Crashlytics, 목적 앱 기능. 모두 추적 아님. <b>확정 전에 실제 포함된 Firebase SDK의 Privacy Manifest(<code>PrivacyInfo.xcprivacy</code>)와 Xcode 개인정보 보고서를 대조</b>한다</td><td>P2</td></tr>
+<tr><td>T7</td><td>정식 앱 이름 확정("커피콩책" 가제), 상표·스토어 중복 검색, <code>CFBundleDisplayName</code> 반영</td><td>P2</td></tr>
+<tr><td>T8</td><td>스토어 설명에 태그 체계 출처 문구(D33) 포함. 앱·스토어 어디에도 "SCA 방식 점수" 표현이 없는지 확인(D6)</td><td>P2</td></tr>
+<tr><td>T9</td><td>Apple Developer에서 Sign in with Apple 설정 시 서버 간 알림 URL(<code>appleServerNotifications</code>) 등록, 테스트 알림 수신 확인</td><td>P1</td></tr>
+<tr><td>T11</td><td>Xcode 26 / iOS 26 SDK 빌드, iOS 17·26 실기기에서 시트·툴바·탭 바·접근성 크기 확인(test-plan의 HIG 항목)</td><td>P1</td></tr>
+<tr><td>T12</td><td>Firebase App Check(App Attest) 적용 — Callable 함수와 Firestore</td><td>P2</td></tr>
+<tr><td>T13</td><td>스토어 스크린샷·설명, 오픈소스 라이선스 목록(Firebase 등) 확인</td><td>P2</td></tr>
+</table></div>
+
+<h2 id="open">12. 남은 질문 (v1 이후)</h2>
+<div class="tbl"><table>
+<tr><th style="width:44px">#</th><th>질문</th><th style="width:110px">시점</th></tr>
+<tr><td>Q6</td><td>커뮤니티 기능의 공개 범위와 데이터 구조 (사용자 하위 → 공개 컬렉션 복제 여부). <code>refTerm</code>과 <code>tagIndex</code>를 그대로 활용</td><td>v2</td></tr>
+<tr><td>Q8</td><td>v1 제외 기능(사진, 오각형 겹쳐 비교, 통계, 위젯, 영어) 우선순위</td><td>v1 출시 후</td></tr>
+</table></div>
+
+</div>
+</body>
+</html>

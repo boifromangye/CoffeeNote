@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "flavor_taxonomy.schema.json",
+  "title": "커피콩책 플레이버 태그 체계",
+  "description": "구조 규칙. 관계 규칙(parentId 존재, level 연속, group 일치, 부모·자식 이름 중복 금지, id 중복 금지)은 JSON Schema로 표현할 수 없어 FlavorTaxonomyTests(TST-T01~T05)에서 검증한다.",
+  "type": "object",
+  "required": ["version", "updated", "nodes"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "version": { "type": "integer", "minimum": 1 },
+    "updated": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" },
+    "note": { "type": "string" },
+    "nodes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "parentId", "level", "nameKo", "refTerm", "group"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*){0,2}$" },
+          "parentId": { "type": ["string", "null"] },
+          "level": { "type": "integer", "enum": [1, 2, 3] },
+          "nameKo": { "type": "string", "minLength": 1, "maxLength": 12 },
+          "refTerm": { "type": ["string", "null"], "minLength": 1 },
+          "group": { "enum": ["fruit", "floral", "sweet", "nutty", "spice", "roast", "fermented", "defect"] },
+          "deprecated": { "type": "boolean" }
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}
