@@ -9,3 +9,4 @@
 | 02 | [XcodeGen과 Xcode 프로젝트 구조](02-xcodegen.md) | 0 |
 | 03 | [Firebase Emulator와 보안 규칙 테스트](03-firebase-emulator.md) | 0 |
 | 04 | [CI — GitHub Actions](04-ci.md) | 0 |
+| 05 | [값 타입으로 도메인 모델링 — DateOnly](05-value-types-dateonly.md) | 1 |
