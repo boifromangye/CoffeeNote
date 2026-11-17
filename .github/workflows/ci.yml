@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ios:
+    name: iOS 빌드 + 단위 테스트
+    runs-on: macos-26
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Xcode 선택
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+      - name: XcodeGen 설치
+        run: brew install xcodegen
+      - name: 테스트
+        run: |
+          xcodegen generate
+          xcodebuild test \
+            -project CoffeeNote.xcodeproj \
+            -scheme CoffeeNote \
+            -destination 'platform=iOS Simulator,name=iPhone 17,OS=latest' \
+            -resultBundlePath TestResults.xcresult
+      - name: 테스트 결과 업로드
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-test-results
+          path: TestResults.xcresult
+
+  firebase:
+    name: Functions 빌드 + 규칙 테스트 (Emulator)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: functions/package-lock.json
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - name: 의존성 설치
+        run: npm --prefix functions ci
+      - name: Emulator 캐시
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/firebase/emulators
+          key: firebase-emulators-${{ hashFiles('functions/package-lock.json') }}
+      - name: 빌드 · 타입 검사 · Emulator 테스트
+        run: scripts/test-firebase.sh
