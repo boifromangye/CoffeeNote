@@ -19,16 +19,18 @@
 | iOS 단위 테스트 (iPhone 17 · iOS 26.5 시뮬레이터) | ✅ 1 passed |
 | Functions 빌드 + 타입 검사 | ✅ |
 | Emulator(Auth · Firestore · Functions) 기동 + 규칙 스모크 테스트 | ✅ 1 passed |
-| CI | PR에서 확인 |
+| iOS 단위 테스트 (iPhone 16 · iOS 18.5 시뮬레이터, iOS 17 대신) | ✅ passed |
+| CI (PR #11: iOS · Emulator · GitGuardian) | ✅ |
 
 ## 완료 조건 대비
 - [x] 빈 앱이 iOS 26 시뮬레이터에서 실행
-- [ ] 빈 앱이 **iOS 17** 시뮬레이터에서 실행 — 이 Mac에 iOS 17 런타임이 없음(남은 일 1)
-- [x] Emulator 로컬 기동 / [ ] CI에서 기동 — 첫 PR에서 확인
-- [ ] Firebase 실제 프로젝트·Blaze·예산 알림(spec T10) — 계정 작업이라 직접 해야 함(남은 일 2)
+- [x] 빈 앱이 **iOS 17** 시뮬레이터에서 실행 → **iOS 18.5로 대신 확인**(아래 '스펙과 다르게 한 점')
+- [x] Emulator 로컬 기동 / [x] CI에서 기동
+- [ ] Firebase 실제 프로젝트·Blaze·예산 알림(spec T10) — 계정 작업이라 직접 해야 함(남은 일 1)
 
 ## 스펙과 다르게 한 점
 - **Xcode 버전**: 계획은 Xcode 26 / iOS 26 SDK, 이 Mac에는 Xcode 27.2가 설치되어 있어 iOS 27 SDK로 빌드했다. D41의 목적(최신 SDK 빌드, iOS 17 최소 지원)은 유지된다.
+- **iOS 17 시뮬레이터 확인 → iOS 18.5로 대체** (저장소 주인 결정, 2026-11-19): Xcode 27.2에서는 iOS 17 런타임을 받을 수 없었다(`xcodebuild -downloadPlatform`이 17.x 전부 "not available"). 이 Mac에서 가장 낮은 런타임인 iOS 18.5에서 테스트가 통과했다. 배포 타깃이 17.0이라 iOS 18 이상 전용 API는 컴파일러가 `@available` 검사로 막아 준다. 실제 iOS 17에서의 동작은 Phase 9 TestFlight 실기기에서 확인한다.
 - **firestore.rules**: 계획은 Phase 0 저장소 구조에 `firestore.rules`를 두는 것까지다. spec 7장 규칙 본문은 테스트 먼저 원칙(작업 규칙 3)에 따라 Phase 2에서 TST-S01~S11과 함께 넣는다. 지금은 모두 거부.
 
 ## 결정과 이유
@@ -38,10 +40,8 @@
 - **demo- 프로젝트**: 실제 Firebase 프로젝트 없이 Emulator와 CI를 돌릴 수 있다.
 
 ## 남은 일 (저장소 주인)
-1. iOS 17 시뮬레이터 런타임 설치: Xcode → Settings → Components에서 iOS 17.x 추가(약 7GB), 이후
-   `DESTINATION='platform=iOS Simulator,name=iPhone 15,OS=17.5' scripts/test-ios.sh`
-2. Firebase 콘솔: 프로젝트 생성 → Blaze 전환 + 예산 알림 → Firestore 리전 `asia-northeast3` → iOS 앱 등록 후 `GoogleService-Info.plist`를 `CoffeeNote/Resources/`에 두기(Git 제외됨) → `npx --prefix functions firebase use --add`
-3. Xcode에서 서명 팀 지정(실기기 실행 시)
+1. Firebase 콘솔: 프로젝트 생성 → Blaze 전환 + 예산 알림 → Firestore 리전 `asia-northeast3` → iOS 앱 등록 후 `GoogleService-Info.plist`를 `CoffeeNote/Resources/`에 두기(Git 제외됨) → `npx --prefix functions firebase use --add`
+2. Xcode에서 서명 팀 지정(실기기 실행 시)
 
 ## 환경 메모
 - 이 Mac은 Apple Silicon(M2 Max)인데 `/usr/local`의 Homebrew와 Node가 Intel(x86_64)판이라 Rosetta로 실행된다. Homebrew가 소스 빌드에 실패해 JDK 21은 Eclipse Temurin arm64 바이너리를 `~/Library/Java/JavaVirtualMachines`에 설치했다. 장기적으로는 `/opt/homebrew`에 arm64 Homebrew를 새로 설치하는 것을 권장한다.
