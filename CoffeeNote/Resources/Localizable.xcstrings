@@ -1,0 +1,18 @@
+{
+  "sourceLanguage" : "ko",
+  "strings" : {
+    "root.placeholder.description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "기초 작업이 끝났어요. 다음 단계에서 화면이 채워집니다." } }
+      }
+    },
+    "root.placeholder.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "커피콩책" } }
+      }
+    }
+  },
+  "version" : "1.0"
+}
